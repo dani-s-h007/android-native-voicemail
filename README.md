@@ -2,7 +2,7 @@
 
 An automated on-device Voicemail and Call Screener application built with Flutter and native Kotlin. This app leverages Android's native `CallScreeningService` to intercept incoming calls when you are busy, automatically handle them without interrupting you, and dispatch a custom SMS auto-reply.
 
-## ✨ Features
+## Features
 
 - **Method 1: Silent Reject & SMS**
   Silently intercepts and rejects incoming calls before your phone even rings, instantly dispatching an automated SMS reply to the caller.
@@ -22,7 +22,7 @@ An automated on-device Voicemail and Call Screener application built with Flutte
 - **100% Free & Native**
   Powered entirely by native on-device Android APIs (`CallScreeningService`, `TelecomManager`, `SmsManager`). No cloud subscriptions, no Twilio fees, and no third-party APIs required.
 
-## 🚀 Technologies Used
+## Technologies Used
 
 - **Frontend:** Flutter & Dart
 - **Backend Services:** Native Kotlin (Android)
@@ -31,7 +31,7 @@ An automated on-device Voicemail and Call Screener application built with Flutte
 - **Voice (TTS):** Google Text-to-Speech Engine via Foreground Service
 - **Storage:** SharedPreferences
 
-## 📱 Installation
+## Installation
 
 1. Clone this repository:
    ```bash
@@ -52,7 +52,7 @@ An automated on-device Voicemail and Call Screener application built with Flutte
 
 > **Note:** Because this app relies on the `CallScreeningService` and `SmsManager`, it must be tested on a physical Android device (API 29+) with a working SIM card. Simulators cannot fully replicate incoming phone calls and SMS capabilities.
 
-## 🔒 Privacy & Permissions
+## Privacy & Permissions
 
 This app requires the following Android permissions to function properly:
 - `ROLE_CALL_SCREENING`: To natively intercept and reject/answer incoming calls.
@@ -62,7 +62,7 @@ This app requires the following Android permissions to function properly:
 
 All data, schedules, and custom messages are stored locally on your device.
 
-## 👨‍💻 Developed By
+## Developed By
 
 Developed by **Danish K**  
-🔗 [danishk.web.app](https://danishk.web.app)
+[danishk.web.app](https://danishk.web.app)
