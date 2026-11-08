@@ -39,6 +39,15 @@ app.include_router(transient_relay.router)
 app.include_router(dnd.router)
 app.include_router(auth.router)
 
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "service": "Indian Visual Voicemail Backend",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
 @app.get("/health")
 @app.get("/api/v1/health")
 async def health_check():
