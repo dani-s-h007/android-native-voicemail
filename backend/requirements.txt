@@ -1,0 +1,16 @@
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+gradio>=4.44.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.1
+sqlalchemy>=2.0.28
+asyncpg>=0.29.0
+alembic>=1.13.1
+firebase-admin>=6.5.0
+boto3>=1.34.60
+supabase>=2.4.0
+faster-whisper>=1.0.1
+torchaudio>=2.2.0
+python-multipart>=0.0.9
+requests>=2.31.0
+python-dotenv>=1.0.1
