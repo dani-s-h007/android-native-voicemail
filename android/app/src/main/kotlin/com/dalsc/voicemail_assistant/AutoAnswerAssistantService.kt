@@ -233,11 +233,20 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             val tts = textToSpeech ?: return
-            tts.language = Locale.ENGLISH
-
             val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-            val customMsg = prefs.getString("flutter.dnd_msg", null)
-                ?: "Hello. I am currently in a meeting and cannot take your call. Please leave a message after the beep."
+            val lang = prefs.getString("flutter.active_greeting_language", "English (India)")
+            when (lang) {
+                "Hindi" -> tts.language = Locale("hi", "IN")
+                "Malayalam" -> tts.language = Locale("ml", "IN")
+                "Tamil" -> tts.language = Locale("ta", "IN")
+                "Telugu" -> tts.language = Locale("te", "IN")
+                "Kannada" -> tts.language = Locale("kn", "IN")
+                else -> tts.language = Locale("en", "IN")
+            }
+
+            val customMsg = prefs.getString("flutter.active_greeting_text", null)
+                ?: prefs.getString("flutter.dnd_msg", null)
+                ?: "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!"
 
             tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onStart(utteranceId: String?) {
