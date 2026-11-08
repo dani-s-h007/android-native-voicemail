@@ -1,22 +1,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.voicemail">
+    package="com.dalsc.voicemail_assistant">
     
+    <!-- Telephony & Call Screening Permissions -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
+    <!-- Audio & System Settings -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Notifications & Foreground Services -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
-        android:label="Voicemail"
+        android:label="Visual Voicemail"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
@@ -35,35 +43,88 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Dialer intent filters so app can be set as Default Phone App -->
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
         </activity>
 
+        <!-- FCM Notification Channel -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="voicemail_alerts_channel" />
+
+        <!-- InCallService for direct call lifecycle control (Default Phone App mode) -->
         <service
-            android:name=".MyCallScreeningService"
+            android:name=".VoicemailInCallService"
+            android:permission="android.permission.BIND_INCALL_SERVICE"
+            android:exported="true">
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <!-- DND Call Screening Service -->
+        <service
+            android:name=".DndCallScreeningService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
         </service>
-        
 
-
-        <service
-            android:name=".CallHandlerService"
-            android:foregroundServiceType="phoneCall"
-            android:exported="false" />
-            
-        <receiver android:name=".ClassModeWidget" android:exported="true">
+        <!-- Phone State BroadcastReceiver for reliable ringing detection -->
+        <receiver
+            android:name=".PhoneStateReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
         </receiver>
 
-        <receiver android:name=".ScheduleReceiver" android:exported="false" />
-        
+        <!-- Call Action Receiver for Answer/Decline buttons on notification -->
+        <receiver
+            android:name=".CallActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.dalsc.voicemail_assistant.ACTION_ANSWER" />
+                <action android:name="com.dalsc.voicemail_assistant.ACTION_DECLINE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Auto-Answer Assistant Foreground Service (Mode 3) -->
+        <service
+            android:name=".AutoAnswerAssistantService"
+            android:foregroundServiceType="phoneCall"
+            android:exported="false" />
+
+        <!-- DND Action Receivers -->
+        <receiver
+            android:name=".DndStopReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.dalsc.voicemail_assistant.ACTION_STOP_DND" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".DndBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
