@@ -1,34 +1,55 @@
 name: voicemail
-description: An automated Class Mode voicemail app.
-
-publish_to: 'none'
-
+description: "Enterprise-grade Visual Voicemail and Call Assistant for Android in India"
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-  shared_preferences: ^2.2.1
-  sqflite: ^2.3.0
-  path: ^1.8.3
-  permission_handler: ^11.3.1
+  flutter_localizations:
+    sdk: flutter
+
+  # Architecture & State Management
+  flutter_riverpod: ^2.5.1
+  go_router: ^14.2.0
+
+  # Material 3 & UI Design System
+  dynamic_color: ^1.7.0
+  cupertino_icons: ^1.0.6
+
+  # Telephony & Native Platform
   flutter_contacts: ^1.1.9
-  url_launcher: ^6.3.2
+  permission_handler: ^11.3.1
+  flutter_tts: ^4.2.2
+
+  # Media & Audio Playback
+  just_audio: ^0.9.36
+  audio_session: ^0.1.18
+
+  # Storage & Database (Local only)
+  sqflite: ^2.3.0
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+  path: ^1.8.3
+  path_provider: ^2.1.2
+
+  # Utilities & Integrations
+  intl: ^0.20.3
+  clock: ^1.1.2
+  share_plus: ^8.0.3
+  package_info_plus: ^8.0.0
+  url_launcher: ^6.2.6
+  in_app_review: ^2.0.9
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  flutter_launcher_icons: ^0.14.4
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
-
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/icon.jpg"
+  assets:
+    - assets/legal/
