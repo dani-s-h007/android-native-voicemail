@@ -147,23 +147,16 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
         originalVolume = am.getStreamVolume(AudioManager.STREAM_VOICE_CALL)
         originalMusicVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC)
 
-        // Lower incoming volume on earpiece
-        am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 1, 0)
-
-        // Maximize MEDIA loudspeaker volume so sound physically fires into the bottom microphone
-        val maxMusicVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, maxMusicVol, 0)
-
+        // Set communication mode for telecom call audio
         am.mode = AudioManager.MODE_IN_COMMUNICATION
-        enableSpeakerphone(am)
 
-        // Explicitly ensure microphone is NOT muted so it picks up speaker output
+        // Ensure microphone is active
         am.isMicrophoneMute = false
 
-        // Wait 700ms for telecom baseband audio path to stabilize
+        // Wait 500ms for telecom baseband audio path to stabilize
         handler.postDelayed({
             playGreetingAudio()
-        }, 700)
+        }, 500)
     }
 
     private fun enableSpeakerphone(am: AudioManager) {
@@ -187,13 +180,13 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
         try {
             val greetingFile = File(filesDir, "current_greeting.wav")
             if (greetingFile.exists()) {
-                Log.i(TAG, "Playing custom greeting WAV file on STREAM_MUSIC at maximum volume.")
+                Log.i(TAG, "Playing custom greeting WAV file on STREAM_VOICE_CALL.")
                 mediaPlayer = MediaPlayer().apply {
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                            .setLegacyStreamType(AudioManager.STREAM_VOICE_CALL)
                             .build()
                     )
                     setDataSource(greetingFile.absolutePath)
@@ -211,7 +204,7 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
                     start()
                 }
             } else {
-                Log.i(TAG, "No WAV file on disk. Initializing TextToSpeech on STREAM_MUSIC...")
+                Log.i(TAG, "No WAV file on disk. Initializing TextToSpeech on STREAM_VOICE_CALL...")
                 fallbackToTextToSpeech()
             }
 
@@ -264,9 +257,9 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
                 }
             })
 
-            // STREAM_MUSIC: Loud media speaker directly next to microphone hole
+            // Route TTS into STREAM_VOICE_CALL so caller hears it over the active phone call
             val params = android.os.Bundle().apply {
-                putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_MUSIC)
+                putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_VOICE_CALL)
                 putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
             }
             tts.speak(customMsg, TextToSpeech.QUEUE_FLUSH, params, "greeting_tts")
@@ -316,7 +309,12 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
             }
 
             recorder.apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
+                try {
+                    setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+                } catch (e: Exception) {
+                    Log.w(TAG, "VOICE_COMMUNICATION source failed, falling back to MIC: ${e.message}")
+                    setAudioSource(MediaRecorder.AudioSource.MIC)
+                }
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 setAudioEncodingBitRate(64000)
