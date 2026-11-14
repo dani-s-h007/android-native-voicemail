@@ -274,9 +274,9 @@ class AppConfig {
   // 10. RUNTIME METADATA & OVERRIDE LOADER
   // ===========================================================================
 
-  static late final String version;
-  static late final String buildNumber;
-  static late final String packageName;
+  static String version = '1.0.0';
+  static String buildNumber = '1';
+  static String packageName = packageIdProd;
 
   /// Loads package information and optional external JSON override from assets/config/app_config.json.
   static Future<void> initialize() async {

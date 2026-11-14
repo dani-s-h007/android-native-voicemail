@@ -18,28 +18,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<_OnboardingPageData> _pages = const [
     _OnboardingPageData(
-      icon: Icons.lock_outline_rounded,
+      icon: Icons.shield_outlined,
       iconColor: Colors.blue,
       title: '100% On-Device Privacy',
       headline: 'Zero Permanent Cloud Storage',
       description:
-          'Your voicemails, audio recordings, and transcripts never leave your phone. Everything is processed and stored strictly on-device in a secure local database.',
+          'Your voicemails, audio recordings, and transcripts never leave your phone. Everything is processed and stored locally in a secure database.',
     ),
     _OnboardingPageData(
       icon: Icons.sim_card_outlined,
       iconColor: Colors.deepPurple,
-      title: 'Tailored for India',
-      headline: 'Seamless Jio & Airtel Integration',
+      title: 'Universal Carrier Support',
+      headline: 'Works With Any Mobile Network',
       description:
-          'Uses native Indian VoLTE Call Forwarding (*403 / *67) to answer when you decline or miss a call. Ultra-short greetings guarantee minimum pulse usage.',
+          'Compatible with major carriers worldwide using standard conditional call forwarding (*67 / *61 / *62). Easily configure your network or custom codes.',
     ),
     _OnboardingPageData(
       icon: Icons.smart_toy_outlined,
       iconColor: Colors.teal,
       title: 'Intelligent Call Assistant',
-      headline: 'Polite Answers When You Are Busy',
+      headline: 'Polite Handling When Unavailable',
       description:
-          'In class, driving, or in a meeting? The assistant automatically informs callers to text on WhatsApp or SMS, keeping you uninterrupted.',
+          'In a meeting, driving, or focusing? Your assistant politely greets callers, captures their message, or directs them to text, keeping you uninterrupted.',
     ),
   ];
 

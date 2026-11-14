@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:voicemail/app/di/service_providers.dart';
 import 'package:voicemail/core/constants/app_constants.dart';
-import 'package:voicemail/core/extensions/context_extensions.dart';
 import 'package:voicemail/design_system/components/components.dart';
 import 'package:voicemail/design_system/tokens/spacing_tokens.dart';
 
@@ -20,12 +19,13 @@ class _PermissionRationaleScreenState
   Map<String, bool> _statuses = {
     'callScreening': false,
     'phone': false,
+    'microphone': false,
     'contacts': false,
     'batteryExempt': false,
     'notifications': false,
   };
 
-  bool _isLoading = true;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _PermissionRationaleScreenState
                       ? 'Core Call Screening Ready'
                       : 'Essential Permissions Needed',
                   message:
-                      'Android requires explicit consent before an app can manage call screening or run in the background.',
+                      'Android requires explicit consent before an app can manage call screening or run background services.',
                 ),
                 AppSpacing.vSpace16,
 
@@ -78,7 +78,7 @@ class _PermissionRationaleScreenState
                   icon: Icons.shield_outlined,
                   title: 'Call Screening Service',
                   description:
-                      'Allows the app to evaluate incoming callers before your phone rings, letting Danish K\'s assistant answer spam or unavailable calls.',
+                      'Allows the app to evaluate incoming callers before your phone rings, letting your automated assistant handle spam or unavailable calls.',
                   isGranted: _statuses['callScreening'] ?? false,
                   actionLabel: 'Set Role',
                   onGrant: () async {
@@ -103,12 +103,28 @@ class _PermissionRationaleScreenState
                 ),
                 AppSpacing.vSpace12,
 
-                // 3. Contacts
+                // 3. Audio & Microphone
+                AppPermissionCard(
+                  icon: Icons.mic_none_outlined,
+                  title: 'Microphone & Audio',
+                  description:
+                      'Used to record custom spoken greetings and capture caller audio for on-device speech-to-text.',
+                  isGranted: _statuses['microphone'] ?? false,
+                  isMandatory: true,
+                  actionLabel: 'Allow',
+                  onGrant: () async {
+                    await service.requestMicrophonePermission();
+                    await _refreshPermissions();
+                  },
+                ),
+                AppSpacing.vSpace12,
+
+                // 4. Contacts
                 AppPermissionCard(
                   icon: Icons.contacts_outlined,
                   title: 'Contacts (Recommended)',
                   description:
-                      'Used solely to display caller names instead of raw numbers. Never synced to any cloud.',
+                      'Used exclusively to display caller names instead of raw numbers. Never synced to any cloud.',
                   isGranted: _statuses['contacts'] ?? false,
                   isMandatory: false,
                   actionLabel: 'Allow',
@@ -119,12 +135,12 @@ class _PermissionRationaleScreenState
                 ),
                 AppSpacing.vSpace12,
 
-                // 4. Battery Optimization
+                // 5. Battery Optimization
                 AppPermissionCard(
                   icon: Icons.battery_charging_full_outlined,
                   title: 'Battery Optimization Exemption',
                   description:
-                      'Prevents aggressive OS battery managers (Realme UI, MIUI, ColorOS) from sleeping the background listener.',
+                      'Prevents aggressive OS battery managers from sleeping the background call listener.',
                   isGranted: _statuses['batteryExempt'] ?? false,
                   isMandatory: false,
                   actionLabel: 'Exempt',
@@ -135,7 +151,7 @@ class _PermissionRationaleScreenState
                 ),
                 AppSpacing.vSpace12,
 
-                // 5. Notifications
+                // 6. Notifications
                 AppPermissionCard(
                   icon: Icons.notifications_none_outlined,
                   title: 'Notifications',
@@ -161,7 +177,7 @@ class _PermissionRationaleScreenState
                   child: Text(
                     isCallScreeningOk && isPhoneOk
                         ? 'Continue to Carrier Setup'
-                        : 'Proceed Anyway',
+                        : 'Proceed to Setup',
                   ),
                 ),
                 AppSpacing.vSpace16,
@@ -170,4 +186,3 @@ class _PermissionRationaleScreenState
     );
   }
 }
-

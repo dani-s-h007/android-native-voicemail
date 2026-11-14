@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/core/constants/app_constants.dart';
 import 'package:voicemail/core/extensions/context_extensions.dart';
 import 'package:voicemail/design_system/components/components.dart';
@@ -16,8 +17,27 @@ class ConsentScreen extends StatefulWidget {
 class _ConsentScreenState extends State<ConsentScreen> {
   bool _agreedToTerms = false;
   bool _agreedToRecordingNotice = false;
+  RegionRule _selectedRegion = AppConfig.supportedRegions.first;
 
   bool get _canProceed => _agreedToTerms && _agreedToRecordingNotice;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRegion();
+  }
+
+  Future<void> _loadRegion() async {
+    final prefs = await SharedPreferences.getInstance();
+    final countryCode = prefs.getString('user_selected_region') ?? AppConfig.defaultRegion;
+    final match = AppConfig.supportedRegions.firstWhere(
+      (r) => r.countryCode == countryCode,
+      orElse: () => AppConfig.supportedRegions.first,
+    );
+    if (mounted) {
+      setState(() => _selectedRegion = match);
+    }
+  }
 
   Future<void> _submitConsent() async {
     if (!_canProceed) return;
@@ -56,17 +76,19 @@ class _ConsentScreenState extends State<ConsentScreen> {
                   children: [
                     Icon(Icons.gavel_rounded, color: colorScheme.primary, size: 24),
                     AppSpacing.hSpace12,
-                    Text(
-                      'Indian Telecommunications & DPDP Compliance',
-                      style: context.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        '${_selectedRegion.applicablePrivacyLaw} Compliance',
+                        style: context.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 AppSpacing.vSpace12,
                 Text(
-                  'To respect caller privacy and comply with Indian law, please review our core privacy standards:',
+                  'To respect caller privacy and comply with ${_selectedRegion.applicablePrivacyLaw}, please review our core privacy standards:',
                   style: context.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -81,7 +103,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
             icon: Icons.cloud_off_outlined,
             title: '1. Zero Permanent Cloud Storage',
             description:
-                'We do not operate permanent cloud storage. Once audio is forwarded to your phone, it is purged from relays and exists exclusively in your phone\'s local database.',
+                'We do not store audio on external cloud servers. All incoming voicemails and transcripts are processed and retained exclusively on your device.',
           ),
           AppSpacing.vSpace12,
 
@@ -90,7 +112,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
             icon: Icons.campaign_outlined,
             title: '2. Transparent Caller Notice',
             description:
-                'Callers are explicitly informed through your greeting that you are unavailable and prompted before leaving a voicemail or WhatsApp/SMS message.',
+                'Callers are explicitly notified through your spoken greeting before any voicemail recording begins or messaging is offered.',
           ),
           AppSpacing.vSpace12,
 
@@ -99,7 +121,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
             icon: Icons.delete_forever_outlined,
             title: '3. Full Control & Instant Erasure',
             description:
-                'You maintain 100% ownership of your recordings. You can export, backup, or instantly wipe all voicemails from settings with zero residual server trace.',
+                'You maintain complete ownership of your data. You can export, backup, or permanently delete voicemails at any time with zero residual trace.',
           ),
           AppSpacing.vSpace24,
 
@@ -112,17 +134,16 @@ class _ConsentScreenState extends State<ConsentScreen> {
                   value: _agreedToTerms,
                   onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
                   title: const Text('I agree to the Terms of Service and Privacy Policy'),
-                  subtitle: const Text('Read in full via Settings > Legal Hub'),
+                  subtitle: const Text('Accessible anytime via Settings > Legal Hub'),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
                 ),
                 const Divider(),
                 CheckboxListTile(
                   value: _agreedToRecordingNotice,
-                  onChanged: (val) =>
-                      setState(() => _agreedToRecordingNotice = val ?? false),
-                  title: const Text('I consent to automated call greeting & on-device transcription'),
-                  subtitle: const Text('Complies with Indian Telecommunications Act'),
+                  onChanged: (val) => setState(() => _agreedToRecordingNotice = val ?? false),
+                  title: const Text('I consent to automated call greetings and on-device recording'),
+                  subtitle: Text(_selectedRegion.recordingConsentNotice),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -182,4 +203,3 @@ class _ConsentScreenState extends State<ConsentScreen> {
     );
   }
 }
-

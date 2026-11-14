@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkNavigation() async {
-    await Future.delayed(const Duration(milliseconds: 1400));
+    await Future<void>.delayed(const Duration(milliseconds: 1200));
     if (!mounted) return;
 
     try {
@@ -47,16 +47,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           prefs.getBool('onboarding_completed') ??
           false;
       final consentDone = prefs.getBool(AppConstants.keyConsentAccepted) ?? false;
+      final setupDone = prefs.getBool('setup_wizard_completed') ??
+          prefs.getBool(AppConstants.keyForwardingActive) ??
+          false;
+
+      if (!mounted) return;
+      final router = GoRouter.maybeOf(context);
+      if (router == null) return;
 
       if (!onboardingDone) {
         context.go(AppConstants.routeOnboarding);
       } else if (!consentDone) {
         context.go(AppConstants.routeConsent);
+      } else if (!setupDone) {
+        context.go(AppConstants.routeSetupWizard);
       } else {
         context.go(AppConstants.routeVoicemail);
       }
     } catch (_) {
-      if (mounted) context.go(AppConstants.routeOnboarding);
+      if (mounted) {
+        context.go(AppConstants.routeOnboarding);
+      }
     }
   }
 
@@ -110,12 +121,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ),
                     ),
                     AppSpacing.vSpace8,
-                    Text(
-                      AppConfig.appTagline,
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text(
+                        AppConfig.appTagline,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -126,9 +140,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   children: [
                     Text(
-                      'Created by ${AppConfig.developerName}',
+                      'Universal Call Assistant',
                       style: context.textTheme.labelMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     AppSpacing.vSpace4,
@@ -148,4 +163,3 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
   }
 }
-
