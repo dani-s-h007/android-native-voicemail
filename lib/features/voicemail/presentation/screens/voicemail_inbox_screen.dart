@@ -29,7 +29,6 @@ class _VoicemailInboxScreenState extends ConsumerState<VoicemailInboxScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(voicemailControllerProvider);
     final controller = ref.read(voicemailControllerProvider.notifier);
-    final colorScheme = context.colorScheme;
 
     // Normal AppBar vs Multi-Select AppBar
     PreferredSizeWidget appBar;
@@ -177,7 +176,7 @@ class _VoicemailInboxScreenState extends ConsumerState<VoicemailInboxScreen> {
       icon: Icons.voicemail_rounded,
       title: 'Inbox Zero',
       description:
-          'When callers reach Danish K\'s assistant, recordings and offline transcripts will appear here.',
+          'When callers reach your automated assistant, recordings and offline transcripts will appear here.',
     );
   }
 

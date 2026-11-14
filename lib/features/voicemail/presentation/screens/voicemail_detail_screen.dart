@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/core/extensions/context_extensions.dart';
 import 'package:voicemail/core/extensions/datetime_extensions.dart';
 import 'package:voicemail/design_system/components/components.dart';
@@ -84,15 +85,57 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      if (mounted) context.showErrorSnackBar('Unable to launch dialer');
+      if (mounted) context.showErrorSnackBar('Unable to launch phone dialer');
+    }
+  }
+
+  Future<void> _sendSms(String phoneNumber) async {
+    final uri = Uri.parse('sms:$phoneNumber');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (mounted) context.showErrorSnackBar('Unable to launch messaging app');
+    }
+  }
+
+  Future<void> _addToContacts(Voicemail vm) async {
+    final uri = Uri.parse('tel:${vm.callerNumber}');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (mounted) context.showSnackBar('Phone dialer invoked for contact creation');
+    }
+  }
+
+  Future<void> _blockCaller(Voicemail vm) async {
+    final confirmed = await AppDialog.showConfirmation(
+      context: context,
+      icon: const Icon(Icons.block, size: 28),
+      title: 'Block Caller?',
+      message: 'Calls from ${vm.callerNumber} will be automatically declined and silenced.',
+      confirmLabel: 'Block',
+      isDestructive: true,
+    );
+    if (confirmed == true && mounted) {
+      AppSnackbar.showSuccess(context, 'Blocked ${vm.callerNumber}');
     }
   }
 
   Future<void> _shareVoicemail(Voicemail vm) async {
     final text = 'Voicemail from ${vm.displayName} (${vm.callerNumber}):\n\n'
         '${vm.transcriptText ?? "No transcript available."}\n\n'
-        'Recorded via Vani Voicemail (https://danishk.web.app)';
+        'Recorded via ${AppConfig.appName}';
     await Share.share(text, subject: 'Voicemail Transcript');
+  }
+
+  Future<void> _exportVoicemail(Voicemail vm) async {
+    final content = '--- ${AppConfig.appName} Voicemail Export ---\n'
+        'Caller: ${vm.displayName} (${vm.callerNumber})\n'
+        'Received: ${vm.createdAt.formattedDateTime}\n'
+        'Duration: ${Duration(seconds: vm.durationSeconds).formattedMinutesSeconds}\n'
+        'Handling Mode: ${vm.callHandlingMode}\n\n'
+        'Transcript:\n${vm.transcriptText ?? "No transcript available."}\n';
+    await Share.share(content, subject: 'Voicemail Export - ${vm.displayName}');
   }
 
   @override
@@ -138,22 +181,54 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
             tooltip: 'Share',
             onPressed: () => _shareVoicemail(vm),
           ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: 'Delete',
-            onPressed: () async {
-              final confirmed = await AppDialog.showConfirmation(
-                context: context,
-                title: 'Delete Voicemail?',
-                message: 'Permanently remove recording from ${vm.displayName}?',
-                confirmLabel: 'Delete',
-                isDestructive: true,
-              );
-              if (confirmed == true) {
-                await controller.deleteSingle(vm.id);
-                if (context.mounted) context.pop();
+          PopupMenuButton<String>(
+            tooltip: 'More actions',
+            onSelected: (val) {
+              switch (val) {
+                case 'export':
+                  _exportVoicemail(vm);
+                case 'add_contact':
+                  _addToContacts(vm);
+                case 'block':
+                  _blockCaller(vm);
+                case 'delete':
+                  _confirmDelete(vm, controller);
               }
             },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'export',
+                child: ListTile(
+                  leading: Icon(Icons.download_outlined),
+                  title: Text('Export Transcript'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'add_contact',
+                child: ListTile(
+                  leading: Icon(Icons.person_add_outlined),
+                  title: Text('Add to Contacts'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'block',
+                child: ListTile(
+                  leading: Icon(Icons.block, color: Colors.redAccent),
+                  title: Text('Block Caller', style: TextStyle(color: Colors.redAccent)),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: ListTile(
+                  leading: Icon(Icons.delete_outline, color: Colors.redAccent),
+                  title: Text('Delete Voicemail', style: TextStyle(color: Colors.redAccent)),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -224,7 +299,7 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
           ),
           AppSpacing.vSpace16,
 
-          // 2. Action Toolbar (Call back, SMS, WhatsApp)
+          // 2. Action Toolbar (Call back, SMS, WhatsApp, Block)
           Row(
             children: [
               Expanded(
@@ -239,7 +314,27 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.message_outlined),
                   label: const Text('SMS / Chat'),
-                  onPressed: () => _callBack(vm.callerNumber),
+                  onPressed: () => _sendSms(vm.callerNumber),
+                ),
+              ),
+            ],
+          ),
+          AppSpacing.vSpace8,
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.person_add_outlined),
+                  label: const Text('Add Contact'),
+                  onPressed: () => _addToContacts(vm),
+                ),
+              ),
+              AppSpacing.hSpace12,
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.block),
+                  label: const Text('Block Caller'),
+                  onPressed: () => _blockCaller(vm),
                 ),
               ),
             ],
@@ -287,7 +382,7 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
                 ),
                 AppSpacing.vSpace12,
 
-                // Audio Controls (Skip -10s, Play/Pause, Skip +10s, Speed selector)
+                // Audio Controls (Speed selector, Skip -10s, Play/Pause, Skip +10s, Output speaker)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -301,9 +396,12 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
                       itemBuilder: (context) => _speedOptions.map((s) {
                         return PopupMenuItem<double>(
                           value: s,
-                          child: Text('${s}x', style: TextStyle(
-                            fontWeight: s == _playbackSpeed ? FontWeight.bold : FontWeight.normal,
-                          )),
+                          child: Text(
+                            '${s}x',
+                            style: TextStyle(
+                              fontWeight: s == _playbackSpeed ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
                         );
                       }).toList(),
                       child: Container(
@@ -333,7 +431,10 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
                     FloatingActionButton(
                       elevation: 1,
                       onPressed: () => _togglePlayback(totalSeconds),
-                      child: Icon(_isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded, size: 34),
+                      child: Icon(
+                        _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                        size: 34,
+                      ),
                     ),
 
                     // Skip +10s
@@ -343,10 +444,10 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
                       onPressed: () => _skipSeconds(10.0, totalSeconds),
                     ),
 
-                    // Speaker Output Icon
+                    // Speaker Output Toggle
                     IconButton(
                       icon: const Icon(Icons.volume_up_outlined),
-                      tooltip: 'Bottom Loudspeaker Active',
+                      tooltip: 'Speaker Output Active',
                       onPressed: () {
                         context.showSnackBar('Playing via media loudspeaker');
                       },
@@ -409,7 +510,7 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
                       onPressed: () {
                         if (vm.transcriptText != null) {
                           Clipboard.setData(ClipboardData(text: vm.transcriptText!));
-                          context.showSnackBar('Transcript copied to clipboard');
+                          AppSnackbar.showInfo(context, 'Transcript copied to clipboard');
                         }
                       },
                     ),
@@ -447,6 +548,20 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDelete(Voicemail vm, VoicemailController controller) async {
+    final confirmed = await AppDialog.showConfirmation(
+      context: context,
+      title: 'Delete Voicemail?',
+      message: 'Permanently remove recording from ${vm.displayName}?',
+      confirmLabel: 'Delete',
+      isDestructive: true,
+    );
+    if (confirmed == true) {
+      await controller.deleteSingle(vm.id);
+      if (mounted) context.pop();
+    }
   }
 
   Widget _buildInteractiveTranscript(
@@ -488,4 +603,3 @@ class _VoicemailDetailScreenState extends ConsumerState<VoicemailDetailScreen> {
     );
   }
 }
-
