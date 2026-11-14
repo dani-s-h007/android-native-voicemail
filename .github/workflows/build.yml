@@ -1,0 +1,53 @@
+name: CI/CD Build Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Lint, Test & Build Release Binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Verify Code Formatting & Static Analysis
+        run: flutter analyze
+
+      - name: Run Unit & Widget Tests
+        run: flutter test
+
+      - name: Build Split-per-ABI Release APKs
+        run: flutter build apk --split-per-abi --release
+
+      - name: Build Google Play Android App Bundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-binaries
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/bundle/release/*.aab
+

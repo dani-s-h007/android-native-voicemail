@@ -12,6 +12,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.database.sqlite.SQLiteDatabase
+import android.net.Uri
+import android.provider.ContactsContract
 import android.media.AudioAttributes
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -356,26 +358,65 @@ class AutoAnswerAssistantService : Service(), TextToSpeech.OnInitListener {
     private fun saveVoicemailToLocalDatabase(callerNumber: String, audioPath: String, durationSeconds: Int) {
         try {
             val dbPath = getDatabasePath("voicemail_app.db")
-            if (dbPath.exists()) {
-                val db = SQLiteDatabase.openDatabase(dbPath.absolutePath, null, SQLiteDatabase.OPEN_READWRITE)
-                val values = ContentValues().apply {
-                    put("id", "vm_${System.currentTimeMillis()}")
-                    put("caller_number", callerNumber)
-                    put("audio_local_path", audioPath)
-                    put("duration_seconds", durationSeconds)
-                    put("created_at", System.currentTimeMillis())
-                    put("is_read", 0)
-                    put("is_starred", 0)
-                    put("transcript_text", "On-Device Live Voicemail from $callerNumber")
-                    put("detected_language", "English")
-                    put("transcription_status", "ready")
-                }
-                db.insert("voicemails", null, values)
-                db.close()
-                Log.i(TAG, "Inserted voicemail into local database for $callerNumber")
+            dbPath.parentFile?.mkdirs()
+            val db = SQLiteDatabase.openOrCreateDatabase(dbPath, null)
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS voicemails (
+                    id TEXT PRIMARY KEY,
+                    caller_number TEXT NOT NULL,
+                    caller_name TEXT,
+                    audio_local_path TEXT NOT NULL,
+                    duration_seconds INTEGER NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    is_read INTEGER NOT NULL DEFAULT 0,
+                    is_starred INTEGER NOT NULL DEFAULT 0,
+                    transcript_text TEXT,
+                    detected_language TEXT,
+                    transcription_status TEXT NOT NULL DEFAULT 'completed',
+                    call_handling_mode TEXT NOT NULL DEFAULT 'Live Voicemail'
+                )
+            """.trimIndent())
+
+            val callerName = resolveContactName(callerNumber)
+
+            val values = ContentValues().apply {
+                put("id", "vm_${System.currentTimeMillis()}")
+                put("caller_number", callerNumber)
+                if (callerName != null) put("caller_name", callerName)
+                put("audio_local_path", audioPath)
+                put("duration_seconds", durationSeconds)
+                put("created_at", System.currentTimeMillis())
+                put("is_read", 0)
+                put("is_starred", 0)
+                put("transcript_text", "On-Device Live Voicemail from ${callerName ?: callerNumber}")
+                put("detected_language", "English")
+                put("transcription_status", "completed")
+                put("call_handling_mode", "Live Voicemail")
             }
+            db.insertWithOnConflict("voicemails", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            db.close()
+            Log.i(TAG, "Inserted real voicemail into local database for $callerNumber ($callerName)")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to insert into local database: ${e.message}")
+        }
+    }
+
+    private fun resolveContactName(number: String): String? {
+        if (number.isEmpty()) return null
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            return null
+        }
+        return try {
+            val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number))
+            val projection = arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME)
+            contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIdx = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                    if (nameIdx >= 0) cursor.getString(nameIdx) else null
+                } else null
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

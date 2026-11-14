@@ -1,69 +1,44 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
-import 'screens/inbox_screen.dart';
-import 'screens/settings_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voicemail/app/app.dart';
+import 'package:voicemail/app/config/app_config.dart';
+import 'package:voicemail/app/config/flavor_config.dart';
+import 'package:voicemail/core/constants/app_constants.dart';
+import 'package:voicemail/core/logging/app_logger.dart';
 
-void main() {
-  runApp(const VoicemailApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class VoicemailApp extends StatelessWidget {
-  const VoicemailApp({Key? key}) : super(key: key);
+  // Initialize Flavor Configuration (defaulting to production-ready enterprise flavor)
+  FlavorConfig.initialize(
+    config: const FlavorConfig(
+      flavor: Flavor.prod,
+      appTitle: AppConfig.appName,
+      applicationId: 'com.dalsc.voicemail_assistant',
+      enableDebugLogging: false,
+      mockServicesByDefault: false,
+    ),
+  );
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Voicemail',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MainScreen(),
-    );
+  // Initialize App Identity and Dynamic Package Information
+  await AppConfig.initialize();
+
+  bool isOnboardingCompleted = false;
+
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    isOnboardingCompleted = prefs.getBool(AppConstants.keyOnboardingComplete) ??
+        prefs.getBool('onboarding_completed') ??
+        false;
+  } catch (e) {
+    AppLogger.e('Main', 'Preferences initialization error', e);
   }
-}
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const InboxScreen(),
-    const SettingsScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inbox),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
-    );
-  }
+  // Draw UI immediately to prevent Android splash-screen timeout / ANR
+  runApp(
+    ProviderScope(
+      child: VaniVoicemailApp(isOnboardingCompleted: isOnboardingCompleted),
+    ),
+  );
 }

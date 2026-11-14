@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "984861440542",
+    "project_id": "voicemail-assistant",
+    "storage_bucket": "voicemail-assistant.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984861440542:android:27cd0e3e8a7701e31f4c0f",
+        "android_client_info": {
+          "package_name": "com.dalsc.voicemail_assistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQaHbxnFLhmFnJNIgwYCEqUfaQ7KsnqAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+

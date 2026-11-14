@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:voicemail/core/extensions/context_extensions.dart';
 import 'package:voicemail/core/reliability/reliability_service.dart';
 import 'package:voicemail/design_system/components/components.dart';
 import 'package:voicemail/design_system/tokens/spacing_tokens.dart';
 import 'package:voicemail/features/call_modes/domain/call_mode.dart';
+import 'package:voicemail/features/call_modes/presentation/controllers/auto_messaging_controller.dart';
 import 'package:voicemail/features/call_modes/presentation/controllers/modes_controller.dart';
 import 'package:voicemail/features/call_modes/presentation/screens/dnd_schedule_sheet.dart';
 
@@ -56,6 +58,7 @@ class CallModesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(modesControllerProvider);
+    final autoMsgState = ref.watch(autoMessagingControllerProvider);
     final controller = ref.read(modesControllerProvider.notifier);
     final colorScheme = context.colorScheme;
 
@@ -226,6 +229,37 @@ class CallModesScreen extends ConsumerWidget {
                               ),
                             ],
                           ),
+                          if (mode == CallHandlingMode.autoDecline) ...[
+                            AppSpacing.vSpace10,
+                            InkWell(
+                              onTap: () => context.push('/auto-messaging'),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: colorScheme.outlineVariant),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.tune_rounded, size: 16, color: colorScheme.primary),
+                                    AppSpacing.hSpace8,
+                                    Expanded(
+                                      child: Text(
+                                        'Configure Auto-Reply (${autoMsgState.targetMode.title})',
+                                        style: context.textTheme.labelMedium?.copyWith(
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(Icons.arrow_forward_ios, size: 12, color: colorScheme.primary),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

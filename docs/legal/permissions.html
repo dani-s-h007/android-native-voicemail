@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Permissions Justification - Visual Voicemail Assistant</title>
+    <style>
+        :root {
+            --primary: #5e35b1;
+            --text: #212121;
+            --bg: #fdfdfd;
+            --card-bg: #ffffff;
+            --border: #e0e0e0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 820px;
+            margin: 40px auto;
+            padding: 32px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        h1 { color: var(--primary); margin-top: 0; }
+        h2 { color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 28px; }
+        .meta { color: #666; font-size: 0.9em; margin-bottom: 24px; }
+        .perm-card {
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .perm-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.9em; color: #666; }
+        a { color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Android Permissions Justification</h1>
+    <div class="meta">
+        <strong>Application:</strong> Visual Voicemail Assistant &bull;
+        <strong>Package ID:</strong> com.dalsc.voicemail_assistant &bull;
+        <strong>Author:</strong> Danish K (<a href="https://danishk.web.app" target="_blank">danishk.web.app</a>)
+    </div>
+
+    <p>This document details the functional necessity and privacy scope of every sensitive permission declared in <code>AndroidManifest.xml</code> for the Google Play Console Review Team and end users.</p>
+
+    <div class="perm-card">
+        <div class="perm-name">1. ROLE_CALL_SCREENING (CallScreeningService)</div>
+        <p><strong>Core Purpose:</strong> Automated Call Assistant & Do Not Disturb (DND) Deflection.</p>
+        <p><strong>Justification:</strong> Under Android 10+, background call management without the Call Screening Role is strictly forbidden. The app uses this role to screen incoming calls in real-time (< 30ms) against user-configured DND schedules and whitelist rules (starred contacts, repeat callers within 3 minutes, emergency services). When DND is active, unwanted calls are declined with <code>setRejectCall(true)</code>, which triggers the carrier's conditional forward (*67* / *403*) to the user's dedicated relay number.</p>
+    </div>
+
+    <div class="perm-card">
+        <div class="perm-name">2. android.permission.CALL_PHONE</div>
+        <p><strong>Core Purpose:</strong> Automated Carrier Forwarding Setup via MMI/USSD Codes.</p>
+        <p><strong>Justification:</strong> Indian mobile carriers require dialing standard MMI codes (e.g., <code>*403*DID</code> for Jio, <code>*67*DID#</code> for Airtel/Vi/BSNL) to configure conditional call forwarding. This permission enables the app to dial these codes directly on the user's behalf via <code>TelephonyManager.sendUssdRequest</code> (with a fallback to intent), eliminating manual typing errors.</p>
+    </div>
+
+    <div class="perm-card">
+        <div class="perm-name">3. android.permission.READ_PHONE_STATE</div>
+        <p><strong>Core Purpose:</strong> Multi-SIM / Dual-SIM Carrier Detection.</p>
+        <p><strong>Justification:</strong> Over 90% of Indian smartphone users operate dual-SIM devices. The app requires this permission to identify the active subscription ID (<code>SubscriptionManager</code>) so that call-forwarding codes are dispatched to the exact carrier chosen by the user (e.g., SIM 1 Jio vs. SIM 2 Airtel).</p>
+    </div>
+
+    <div class="perm-card">
+        <div class="perm-name">4. android.permission.READ_CONTACTS</div>
+        <p><strong>Core Purpose:</strong> Local Caller Identification & DND Exception Whitelisting.</p>
+        <p><strong>Justification:</strong> Evaluated strictly on-device in native code to resolve caller phone numbers to contact names in the inbox and to allow starred contacts to bypass DND. <strong>Zero contact records or phonebook entries are ever transmitted to any external server.</strong></p>
+    </div>
+
+    <div class="perm-card">
+        <div class="perm-name">5. android.permission.POST_NOTIFICATIONS</div>
+        <p><strong>Core Purpose:</strong> Voicemail Arrival Alerts & Ongoing DND Status Notification.</p>
+        <p><strong>Justification:</strong> Alerts the user when a voicemail is downloaded and provides an ongoing, persistent notification with a one-tap "Turn Off DND" button while call screening is active.</p>
+    </div>
+
+    <div class="perm-card">
+        <div class="perm-name">6. android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS</div>
+        <p><strong>Core Purpose:</strong> Instantaneous FCM Wake-Up in Deep Doze Mode.</p>
+        <p><strong>Justification:</strong> Without this exemption, Android's Doze mode and OEM battery managers (Xiaomi HyperOS, Realme UI, One UI) delay FCM push delivery for hours, preventing users from receiving timely voicemail alerts.</p>
+    </div>
+
+    <div class="perm-card">
+        <div class="perm-name">7. android.permission.ANSWER_PHONE_CALLS</div>
+        <p><strong>Core Purpose:</strong> Experimental Mode 3 (Auto-Answer Assistant).</p>
+        <p><strong>Justification:</strong> Enables the experimental on-device auto-answering mode via <code>TelecomManager.acceptRingingCall()</code>. This feature is clearly marked as experimental with clear disclaimers regarding acoustic limitations.</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Danish K &bull; Visual Voicemail Assistant &bull; Created for Android users in India.</p>
+    </footer>
+</div>
+</body>
+</html>
+
