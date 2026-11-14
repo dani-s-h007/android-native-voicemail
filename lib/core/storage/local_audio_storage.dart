@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:voicemail/core/logging/app_logger.dart';
 
 class LocalAudioStorage {
   static Future<Directory> getVoicemailDirectory() async {
@@ -24,7 +25,7 @@ class LocalAudioStorage {
         await file.delete();
       }
     } catch (e) {
-      print("Warning deleting local audio file: $e");
+      AppLogger.w('LocalAudioStorage', 'Warning deleting local audio file: $e');
     }
   }
 

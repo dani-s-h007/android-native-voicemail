@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:voicemail/data/mock/seed_voicemails.dart';
 import 'package:voicemail/features/voicemail/domain/voicemail.dart';
 
 class LocalDatabase {
@@ -80,6 +81,16 @@ class LocalDatabase {
         ORDER BY created_at DESC
       ''', [query, query, query]);
     } else {
+      maps = await db.query('voicemails', orderBy: 'created_at DESC');
+    }
+
+    if (maps.isEmpty && (searchQuery == null || searchQuery.trim().isEmpty)) {
+      final seedList = SeedVoicemails.items;
+      final batch = db.batch();
+      for (final item in seedList) {
+        batch.insert('voicemails', item.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+      }
+      await batch.commit(noResult: true);
       maps = await db.query('voicemails', orderBy: 'created_at DESC');
     }
 

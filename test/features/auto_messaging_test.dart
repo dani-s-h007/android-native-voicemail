@@ -39,10 +39,10 @@ void main() {
       final controller = AutoMessagingController();
       await controller.loadSettings();
 
-      expect(controller.debugState.targetMode, AutoMsgTargetMode.all);
-      expect(controller.debugState.selectedContacts, isEmpty);
-      expect(controller.debugState.whatsAppNumber, isEmpty);
-      expect(controller.debugState.emergencyBreakthrough, isTrue);
+      expect(controller.state.targetMode, AutoMsgTargetMode.all);
+      expect(controller.state.selectedContacts, isEmpty);
+      expect(controller.state.whatsAppNumber, isEmpty);
+      expect(controller.state.emergencyBreakthrough, isTrue);
     });
 
     test('Adding and removing contacts persists to SharedPreferences', () async {
@@ -52,15 +52,15 @@ void main() {
       const contact = AutoReplyContact(name: 'Jordan', number: '+15559876543');
       await controller.addContact(contact);
 
-      expect(controller.debugState.selectedContacts.length, 1);
-      expect(controller.debugState.selectedContacts.first.cleanNumber, '5559876543');
+      expect(controller.state.selectedContacts.length, 1);
+      expect(controller.state.selectedContacts.first.cleanNumber, '5559876543');
 
       final prefs = await SharedPreferences.getInstance();
       final numbersJson = prefs.getString(AutoMessagingController.keyNumbers);
       expect(numbersJson, contains('5559876543'));
 
       await controller.removeContact(contact);
-      expect(controller.debugState.selectedContacts, isEmpty);
+      expect(controller.state.selectedContacts, isEmpty);
     });
 
     test('Preview message dynamically appends messaging link when configured', () async {
@@ -70,7 +70,7 @@ void main() {
       await controller.toggleIncludeWhatsApp(true);
       await controller.setWhatsAppNumber('+15551234567');
 
-      final preview = controller.debugState.previewMessage;
+      final preview = controller.state.previewMessage;
       expect(preview, contains('Currently occupied.'));
       expect(preview, contains('Chat: https://wa.me/15551234567'));
       expect(preview, contains('If urgent, call back within 3 mins'));

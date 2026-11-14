@@ -1,5 +1,6 @@
 import 'package:voicemail/core/errors/app_failure.dart';
 import 'package:voicemail/core/result/result.dart';
+import 'package:voicemail/data/mock/seed_voicemails.dart';
 import 'package:voicemail/domain/repositories/voicemail_repository.dart';
 import 'package:voicemail/features/voicemail/domain/voicemail.dart';
 
@@ -41,6 +42,10 @@ class FakeVoicemailRepository implements VoicemailRepository {
                 callHandlingMode: 'Auto-Declined',
               ),
             ];
+
+  /// Factory creating repository preloaded with 20 realistic multi-lingual voicemails
+  factory FakeVoicemailRepository.withFullSeedData() =>
+      FakeVoicemailRepository(initialItems: SeedVoicemails.items);
 
   @override
   Future<Result<List<Voicemail>, AppFailure>> getVoicemails({String? query}) async {

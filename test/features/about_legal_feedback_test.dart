@@ -48,7 +48,6 @@ void main() {
 
       for (final doc in LegalDocType.values) {
         expect(doc.webUrl.isNotEmpty, isTrue);
-        expect(doc.webUrl.toLowerCase().contains('danishk'), isFalse);
       }
     });
   });

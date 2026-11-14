@@ -1,4 +1,4 @@
-name: Vani Voicemail CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Setup Java 17
@@ -40,19 +40,42 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Static Code Analysis
+      - name: Verify Static Code Analysis
         run: flutter analyze
 
-      - name: Execute Unit & Widget Tests
+      - name: Run Unit & Widget Tests
         run: flutter test --coverage
 
-      - name: Build Split-per-ABI Release APK
-        run: flutter build apk --split-per-abi --release
+  build_android:
+    name: Android Build Verification
+    needs: analyze_and_test
+    runs-on: ubuntu-latest
 
-      - name: Upload Build Artifacts
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Debug Android APK
+        run: flutter build apk --debug
+
+      - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vani-release-apks
+          name: app-debug-apk
           path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 14
-
+          retention-days: 7

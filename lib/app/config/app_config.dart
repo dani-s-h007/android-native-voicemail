@@ -43,17 +43,14 @@ class AppConfig {
   // ===========================================================================
 
   /// Developer / Publisher public display name.
-  /// TODO_UPDATE: Replace with your developer, studio, or company name.
-  static const String developerName = 'TODO_UPDATE_DEVELOPER_NAME';
+  static const String developerName = 'Danish K';
 
   /// Developer / Publisher website or portfolio URL.
-  /// TODO_UPDATE: Replace with your website URL.
-  static const String developerWebsiteUrl = 'https://example.com';
+  static const String developerWebsiteUrl = 'https://danishk.web.app';
   static String get developerWebsite => developerWebsiteUrl;
 
   /// Primary support email address.
-  /// TODO_UPDATE: Replace with your user support email.
-  static const String supportEmail = 'support@example.com';
+  static const String supportEmail = 'support@danishk.web.app';
 
   /// Optional telephone support contact number.
   /// TODO_UPDATE: Set or leave empty if telephone support is not provided.
