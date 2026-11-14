@@ -3,16 +3,57 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:voicemail/data/repositories/fake_voicemail_repository.dart';
 import 'package:voicemail/design_system/theme/app_theme.dart';
+import 'package:voicemail/features/voicemail/domain/voicemail.dart';
 import 'package:voicemail/features/voicemail/presentation/controllers/voicemail_controller.dart';
 import 'package:voicemail/features/voicemail/presentation/screens/voicemail_detail_screen.dart';
 import 'package:voicemail/features/voicemail/presentation/screens/voicemail_inbox_screen.dart';
 
 void main() {
+  final sampleTestItems = [
+    Voicemail(
+      id: 'vm_001',
+      callerNumber: '+1 (555) 019-2834',
+      callerName: 'Alex Morgan',
+      audioLocalPath: 'audio/sample_001.m4a',
+      durationSeconds: 24,
+      createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
+      isRead: false,
+      isStarred: false,
+      transcriptText:
+          'Hello, this is Alex following up on the project proposal. Give me a call back when you get a chance.',
+      detectedLanguage: 'English',
+      transcriptionStatus: 'completed',
+      callHandlingMode: 'Automated Assistant',
+    ),
+    Voicemail(
+      id: 'vm_002',
+      callerNumber: '+1 (555) 012-7890',
+      callerName: 'Taylor Reed',
+      audioLocalPath: 'audio/sample_002.m4a',
+      durationSeconds: 18,
+      createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+      isRead: true,
+      isStarred: true,
+      transcriptText:
+          'Hi there, just wanted to check if you received the documentation sent earlier today.',
+      detectedLanguage: 'English',
+      transcriptionStatus: 'completed',
+      callHandlingMode: 'Auto-Declined',
+    ),
+  ];
+
   group('VoicemailRepository & Controller Unit Tests', () {
     late FakeVoicemailRepository repo;
 
     setUp(() {
-      repo = FakeVoicemailRepository();
+      repo = FakeVoicemailRepository(initialItems: sampleTestItems);
+    });
+
+    test('default FakeVoicemailRepository starts completely empty with zero dummy data', () async {
+      final cleanRepo = FakeVoicemailRepository();
+      final res = await cleanRepo.getVoicemails();
+      expect(res.isSuccess, isTrue);
+      expect(res.orNull?.isEmpty, isTrue);
     });
 
     test('getVoicemails returns items', () async {
@@ -55,7 +96,7 @@ void main() {
 
   group('Voicemail Inbox & Detail Widget Tests', () {
     Widget buildTestableWidget(Widget child, {FakeVoicemailRepository? repository}) {
-      final testRepo = repository ?? FakeVoicemailRepository();
+      final testRepo = repository ?? FakeVoicemailRepository(initialItems: sampleTestItems);
       return ProviderScope(
         overrides: [
           voicemailRepositoryProvider.overrideWithValue(testRepo),
@@ -66,6 +107,21 @@ void main() {
         ),
       );
     }
+
+    testWidgets('VoicemailInboxScreen renders clean Inbox Zero empty state when no voicemails exist', (tester) async {
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(buildTestableWidget(
+        const VoicemailInboxScreen(),
+        repository: FakeVoicemailRepository(), // completely clean empty repository
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Inbox Zero'), findsOneWidget);
+      expect(find.text('Alex Morgan'), findsNothing);
+    });
 
     testWidgets('VoicemailInboxScreen renders list, search bar, and filter chips', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);

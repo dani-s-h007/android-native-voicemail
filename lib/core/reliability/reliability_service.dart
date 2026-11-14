@@ -93,39 +93,7 @@ class ReliabilityService {
     }
   }
 
-  static final List<Map<String, dynamic>> _mockDiagnosticLogs = [
-    {
-      'timestamp': 'Today, 2:45 PM',
-      'caller_number': '+1 (555) 234-5678',
-      'decision': 'DISMISSED_TO_VOICEMAIL',
-      'reason': 'Caller busy or unanswered. Forwarded via conditional MMI code to voicemail relay.',
-      'carrier_response': '200 OK (Relay connected)',
-    },
-    {
-      'timestamp': 'Today, 11:15 AM',
-      'caller_number': '+1 (555) 876-5432',
-      'decision': 'SCREENED_BY_DND',
-      'reason': 'Call arrived during scheduled Focus Hours. Dispatched auto-reply message.',
-      'carrier_response': 'Call silenced locally',
-    },
-    {
-      'timestamp': 'Yesterday, 8:20 PM',
-      'caller_number': '911',
-      'decision': 'EMERGENCY_BYPASS_ALLOWED',
-      'reason': 'National emergency number recognized. Bypassed screening and rang immediately.',
-      'carrier_response': 'Direct pass-through',
-    },
-    {
-      'timestamp': 'Yesterday, 3:10 PM',
-      'caller_number': '+1 (555) 345-6789',
-      'decision': 'REPEATED_CALLER_OVERRIDE',
-      'reason': 'Repeated call within 15 minutes. Permitted by DND exception rules.',
-      'carrier_response': 'Direct pass-through',
-    },
-  ];
-
-  static List<Map<String, dynamic>> get mockDiagnosticLogs =>
-      List<Map<String, dynamic>>.from(_mockDiagnosticLogs);
+  static List<Map<String, dynamic>> get mockDiagnosticLogs => const [];
 
   static Future<List<Map<String, dynamic>>> getDiagnosticLogs({int limit = 50}) async {
     try {
@@ -134,7 +102,7 @@ class ReliabilityService {
         return res.map((e) => Map<String, dynamic>.from(e as Map)).toList();
       }
     } catch (_) {}
-    return List<Map<String, dynamic>>.from(_mockDiagnosticLogs);
+    return const [];
   }
 
   static Future<bool> clearDiagnosticLogs() async {

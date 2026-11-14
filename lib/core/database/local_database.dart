@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:voicemail/data/mock/seed_voicemails.dart';
 import 'package:voicemail/features/voicemail/domain/voicemail.dart';
 
 class LocalDatabase {
@@ -20,12 +19,19 @@ class LocalDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(
+    final db = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
+
+    // Clean up any demo or mock records so the inbox contains only real user data
+    try {
+      await db.delete('voicemails', where: "id LIKE 'vm_%' OR caller_number LIKE '+1 (555)%'");
+    } catch (_) {}
+
+    return db;
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -58,6 +64,11 @@ class LocalDatabase {
         await db.execute("ALTER TABLE voicemails ADD COLUMN call_handling_mode TEXT NOT NULL DEFAULT 'Live Voicemail'");
       } catch (_) {}
     }
+    if (oldVersion < 3) {
+      try {
+        await db.delete('voicemails', where: "id LIKE 'vm_%' OR caller_number LIKE '+1 (555)%'");
+      } catch (_) {}
+    }
   }
 
   Future<int> insertVoicemail(Voicemail vm) async {
@@ -81,16 +92,6 @@ class LocalDatabase {
         ORDER BY created_at DESC
       ''', [query, query, query]);
     } else {
-      maps = await db.query('voicemails', orderBy: 'created_at DESC');
-    }
-
-    if (maps.isEmpty && (searchQuery == null || searchQuery.trim().isEmpty)) {
-      final seedList = SeedVoicemails.items;
-      final batch = db.batch();
-      for (final item in seedList) {
-        batch.insert('voicemails', item.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
-      }
-      await batch.commit(noResult: true);
       maps = await db.query('voicemails', orderBy: 'created_at DESC');
     }
 

@@ -46,7 +46,31 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(buildTestableWidget(const CallDiagnosticsScreen()));
+      const testLogs = [
+        {
+          'timestamp': 'Today, 2:45 PM',
+          'caller_number': '+1 (555) 234-5678',
+          'decision': 'DISMISSED_TO_VOICEMAIL',
+          'reason': 'Caller busy or unanswered.',
+          'carrier_response': '200 OK',
+        },
+        {
+          'timestamp': 'Today, 11:15 AM',
+          'caller_number': '+1 (555) 876-5432',
+          'decision': 'SCREENED_BY_DND',
+          'reason': 'Call arrived during scheduled Focus Hours.',
+          'carrier_response': 'Call silenced',
+        },
+        {
+          'timestamp': 'Yesterday, 8:20 PM',
+          'caller_number': '911',
+          'decision': 'EMERGENCY_BYPASS_ALLOWED',
+          'reason': 'National emergency number recognized.',
+          'carrier_response': 'Direct pass-through',
+        },
+      ];
+
+      await tester.pumpWidget(buildTestableWidget(const CallDiagnosticsScreen(initialLogs: testLogs)));
       await tester.pumpAndSettle();
 
       expect(find.text('Why Did This Call Not Work?'), findsOneWidget);

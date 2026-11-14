@@ -7,6 +7,7 @@ import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/app/config/flavor_config.dart';
 import 'package:voicemail/core/constants/app_constants.dart';
 import 'package:voicemail/data/repositories/fake_voicemail_repository.dart';
+import 'package:voicemail/features/voicemail/domain/voicemail.dart';
 import 'package:voicemail/features/voicemail/presentation/controllers/voicemail_controller.dart';
 
 void main() {
@@ -36,7 +37,39 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = FakeVoicemailRepository();
+    final sampleItems = [
+      Voicemail(
+        id: 'vm_001',
+        callerNumber: '+1 (555) 019-2834',
+        callerName: 'Alex Morgan',
+        audioLocalPath: 'audio/sample_001.m4a',
+        durationSeconds: 24,
+        createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
+        isRead: false,
+        isStarred: false,
+        transcriptText:
+            'Hello, this is Alex following up on the project proposal. Give me a call back when you get a chance.',
+        detectedLanguage: 'English',
+        transcriptionStatus: 'completed',
+        callHandlingMode: 'Automated Assistant',
+      ),
+      Voicemail(
+        id: 'vm_002',
+        callerNumber: '+1 (555) 012-7890',
+        callerName: 'Taylor Reed',
+        audioLocalPath: 'audio/sample_002.m4a',
+        durationSeconds: 18,
+        createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+        isRead: true,
+        isStarred: true,
+        transcriptText:
+            'Hi there, just wanted to check if you received the documentation sent earlier today.',
+        detectedLanguage: 'English',
+        transcriptionStatus: 'completed',
+        callHandlingMode: 'Auto-Declined',
+      ),
+    ];
+    final mockRepo = FakeVoicemailRepository(initialItems: sampleItems);
 
     // 1. Launch App with mock repository override
     await tester.pumpWidget(

@@ -4,46 +4,14 @@ import 'package:voicemail/data/mock/seed_voicemails.dart';
 import 'package:voicemail/domain/repositories/voicemail_repository.dart';
 import 'package:voicemail/features/voicemail/domain/voicemail.dart';
 
-/// In-memory mock voicemail repository for standalone preview, tests, and demo mode.
+/// In-memory voicemail repository for standalone preview, tests, and clean runtime.
 class FakeVoicemailRepository implements VoicemailRepository {
   final List<Voicemail> _items;
 
   FakeVoicemailRepository({List<Voicemail>? initialItems})
-      : _items = initialItems ??
-            [
-              Voicemail(
-                id: 'vm_001',
-                callerNumber: '+1 (555) 019-2834',
-                callerName: 'Alex Morgan',
-                audioLocalPath: 'audio/sample_001.m4a',
-                durationSeconds: 24,
-                createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
-                isRead: false,
-                isStarred: false,
-                transcriptText:
-                    'Hello, this is Alex following up on the project proposal. Give me a call back when you get a chance.',
-                detectedLanguage: 'English',
-                transcriptionStatus: 'completed',
-                callHandlingMode: 'Automated Assistant',
-              ),
-              Voicemail(
-                id: 'vm_002',
-                callerNumber: '+1 (555) 012-7890',
-                callerName: 'Taylor Reed',
-                audioLocalPath: 'audio/sample_002.m4a',
-                durationSeconds: 18,
-                createdAt: DateTime.now().subtract(const Duration(hours: 3)),
-                isRead: true,
-                isStarred: true,
-                transcriptText:
-                    'Hi there, just wanted to check if you received the documentation sent earlier today.',
-                detectedLanguage: 'English',
-                transcriptionStatus: 'completed',
-                callHandlingMode: 'Auto-Declined',
-              ),
-            ];
+      : _items = initialItems != null ? List<Voicemail>.from(initialItems) : [];
 
-  /// Factory creating repository preloaded with 20 realistic multi-lingual voicemails
+  /// Factory creating repository preloaded with 20 realistic multi-lingual voicemails for testing
   factory FakeVoicemailRepository.withFullSeedData() =>
       FakeVoicemailRepository(initialItems: SeedVoicemails.items);
 

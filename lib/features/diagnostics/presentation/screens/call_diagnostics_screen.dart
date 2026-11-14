@@ -8,21 +8,30 @@ import 'package:voicemail/design_system/components/components.dart';
 import 'package:voicemail/design_system/tokens/spacing_tokens.dart';
 
 class CallDiagnosticsScreen extends StatefulWidget {
-  const CallDiagnosticsScreen({super.key});
+  final List<Map<String, dynamic>>? initialLogs;
+
+  const CallDiagnosticsScreen({
+    super.key,
+    this.initialLogs,
+  });
 
   @override
   State<CallDiagnosticsScreen> createState() => _CallDiagnosticsScreenState();
 }
 
 class _CallDiagnosticsScreenState extends State<CallDiagnosticsScreen> {
-  List<Map<String, dynamic>> _logs = ReliabilityService.mockDiagnosticLogs;
+  List<Map<String, dynamic>> _logs = const [];
   bool _isLoading = false;
   String _filterQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _refreshLogs();
+    if (widget.initialLogs != null) {
+      _logs = widget.initialLogs!;
+    } else {
+      _refreshLogs();
+    }
   }
 
   Future<void> _refreshLogs() async {
