@@ -45,7 +45,7 @@ class _AutoMessagingScreenState extends ConsumerState<AutoMessagingScreen> {
       if (contact != null && contact.phones.isNotEmpty) {
         final phone = contact.phones.first.number;
         final name = contact.displayName.isNotEmpty ? contact.displayName : 'Contact';
-        ref.read(autoMessagingControllerProvider.notifier).addContact(
+        await ref.read(autoMessagingControllerProvider.notifier).addContact(
               AutoReplyContact(name: name, number: phone),
             );
         if (mounted) context.showSnackBar('Added $name ($phone)');
@@ -59,7 +59,7 @@ class _AutoMessagingScreenState extends ConsumerState<AutoMessagingScreen> {
     final nameController = TextEditingController();
     final phoneController = TextEditingController();
 
-    await showDialog(
+    await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Add Phone Number'),
@@ -159,9 +159,12 @@ class _AutoMessagingScreenState extends ConsumerState<AutoMessagingScreen> {
                 onTap: () => controller.setTargetMode(mode),
                 child: Row(
                   children: [
+                    // ignore: deprecated_member_use
                     Radio<AutoMsgTargetMode>(
                       value: mode,
+                      // ignore: deprecated_member_use
                       groupValue: state.targetMode,
+                      // ignore: deprecated_member_use
                       onChanged: (val) {
                         if (val != null) controller.setTargetMode(val);
                       },

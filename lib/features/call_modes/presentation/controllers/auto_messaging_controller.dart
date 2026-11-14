@@ -69,7 +69,7 @@ class AutoMessagingController extends StateNotifier<AutoMessagingState> {
     _initFuture = loadSettings();
   }
 
-  AutoMessagingState get debugState => state;
+  AutoMessagingState get currentState => state;
 
   static const String keyTargetMode = 'auto_msg_target_mode';
   static const String keyContacts = 'auto_msg_selected_contacts';
@@ -90,8 +90,12 @@ class AutoMessagingController extends StateNotifier<AutoMessagingState> {
       final contactsJson = prefs.getString(keyContacts) ?? '[]';
       List<AutoReplyContact> contacts = [];
       try {
-        final List decoded = jsonDecode(contactsJson);
-        contacts = decoded.map((e) => AutoReplyContact.fromMap(e as Map<String, dynamic>)).toList();
+        final dynamic rawDecoded = jsonDecode(contactsJson);
+        if (rawDecoded is List) {
+          contacts = rawDecoded
+              .map((e) => AutoReplyContact.fromMap(e as Map<String, dynamic>))
+              .toList();
+        }
       } catch (_) {}
 
       final msg = prefs.getString(keyActiveGreeting) ??

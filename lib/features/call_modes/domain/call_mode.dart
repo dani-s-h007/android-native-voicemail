@@ -3,33 +3,33 @@ import 'package:flutter/material.dart';
 enum CallHandlingMode {
   serverRelay(
     id: 'MODE_1_SERVER_RELAY',
-    title: 'Server Greeting Mode',
-    subtitle: 'Carrier forwards busy/declined calls to Kerala DID',
-    costDescription: 'Minimal 1 pulse (~₹0.30)',
+    title: 'Standard Server Greeting',
+    subtitle: 'Carrier forwards busy or unanswered calls to voicemail relay',
+    costDescription: 'Standard carrier pulse',
     icon: Icons.cloud_outlined,
-    badgeText: 'RECOMMENDED',
+    badgeText: 'CARRIER RELAY',
   ),
   autoDecline(
     id: 'MODE_2_AUTO_DECLINE',
     title: 'Auto-Decline with Message',
-    subtitle: 'Silently rejects unsaved callers and prompts SMS/WhatsApp',
-    costDescription: '100% Free (₹0 credits)',
+    subtitle: 'Screen calls silently and dispatch instant SMS or messaging link',
+    costDescription: '100% Free & Local',
     icon: Icons.phone_disabled_outlined,
     badgeText: 'LOCAL SCREENING',
   ),
   autoAnswer(
     id: 'MODE_3_AUTO_ANSWER',
-    title: 'Live Voicemail (iPhone Style)',
-    subtitle: 'Answers locally on device, plays greeting, and records caller for ₹0',
-    costDescription: '100% Free (No Carrier Setup / ₹0)',
+    title: 'Auto-Answer Assistant',
+    subtitle: 'Answers locally on device, speaks greeting, and transcribes speech',
+    costDescription: '100% Free & Local (On-Device)',
     icon: Icons.voicemail_rounded,
-    badgeText: 'IPHONE STYLE',
+    badgeText: 'ON-DEVICE',
   ),
   silentDnd(
     id: 'MODE_4_SILENT_DND',
     title: 'Silent DND Mode',
-    subtitle: 'Total silence during classes, lectures, and exams',
-    costDescription: '100% Free (₹0 credits)',
+    subtitle: 'Total silence during meetings, focus, and quiet hours',
+    costDescription: '100% Free & Local',
     icon: Icons.do_not_disturb_on_outlined,
     badgeText: 'ZERO DISTRACTION',
   );
@@ -68,9 +68,9 @@ class DndSchedule {
   const DndSchedule({
     this.isEnabled = false,
     this.startTime = const TimeOfDay(hour: 9, minute: 0),
-    this.endTime = const TimeOfDay(hour: 16, minute: 0),
-    this.daysOfWeek = const [1, 2, 3, 4, 5], // Mon - Fri (College/Class)
-    this.label = 'College / Class Schedule',
+    this.endTime = const TimeOfDay(hour: 17, minute: 0),
+    this.daysOfWeek = const [1, 2, 3, 4, 5], // Mon - Fri
+    this.label = 'Work & Focus Hours',
   });
 
   DndSchedule copyWith({
@@ -92,24 +92,29 @@ class DndSchedule {
 
 class DndExceptions {
   final bool allowStarredContacts;
-  final bool allowRepeatCallers; // 2nd call within 3 minutes
-  final List<String> emergencyNumbers; // 112, 100, 108
+  final bool allowRepeatCallersWithin15Min;
+  final List<String> emergencyNumbers;
+  final List<String> whitelistNumbers;
 
   const DndExceptions({
     this.allowStarredContacts = true,
-    this.allowRepeatCallers = true,
-    this.emergencyNumbers = const ['112', '100', '108', '101'],
+    this.allowRepeatCallersWithin15Min = true,
+    this.emergencyNumbers = const ['911', '112', '999', '100', '108', '101'],
+    this.whitelistNumbers = const [],
   });
 
   DndExceptions copyWith({
     bool? allowStarredContacts,
-    bool? allowRepeatCallers,
+    bool? allowRepeatCallersWithin15Min,
+    List<String>? emergencyNumbers,
+    List<String>? whitelistNumbers,
   }) {
     return DndExceptions(
       allowStarredContacts: allowStarredContacts ?? this.allowStarredContacts,
-      allowRepeatCallers: allowRepeatCallers ?? this.allowRepeatCallers,
-      emergencyNumbers: emergencyNumbers,
+      allowRepeatCallersWithin15Min:
+          allowRepeatCallersWithin15Min ?? this.allowRepeatCallersWithin15Min,
+      emergencyNumbers: emergencyNumbers ?? this.emergencyNumbers,
+      whitelistNumbers: whitelistNumbers ?? this.whitelistNumbers,
     );
   }
 }
-

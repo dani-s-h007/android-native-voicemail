@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/core/constants/app_constants.dart';
 import 'package:voicemail/core/reliability/reliability_service.dart';
 import 'package:voicemail/features/call_modes/domain/call_mode.dart';
@@ -46,8 +46,9 @@ class ModesState {
     if (!isAssistantActive) return 'Assistant Paused';
     if (isDndActive) {
       if (dndUntil != null && dndUntil!.isAfter(DateTime.now())) {
-        final timeStr = TimeOfDay.fromDateTime(dndUntil!).format;
-        return 'DND Active until ${dndUntil!.hour}:${dndUntil!.minute.toString().padLeft(2, '0')}';
+        final hour = dndUntil!.hour.toString().padLeft(2, '0');
+        final min = dndUntil!.minute.toString().padLeft(2, '0');
+        return 'DND Active until $hour:$min';
       }
       return 'DND Active (Schedule: ${dndSchedule.label})';
     }
@@ -91,6 +92,16 @@ class ModesController extends StateNotifier<ModesState> {
           CallHandlingMode.serverRelay.id;
       final active = prefs.getBool(AppConstants.keyAssistantActive) ?? true;
       final dndUntilMillis = prefs.getInt(AppConstants.keyDndUntil);
+      final allowStarred = prefs.getBool('dnd_allow_starred') ?? true;
+      final allowRepeat = prefs.getBool('dnd_allow_repeat_15min') ?? true;
+      final whitelist = prefs.getStringList('dnd_whitelist_numbers') ?? [];
+
+      // Load active region emergency numbers
+      final selectedCountry = prefs.getString('user_selected_region') ?? AppConfig.defaultRegion;
+      final region = AppConfig.supportedRegions.firstWhere(
+        (r) => r.countryCode == selectedCountry,
+        orElse: () => AppConfig.supportedRegions.first,
+      );
 
       DateTime? until;
       if (dndUntilMillis != null) {
@@ -104,15 +115,23 @@ class ModesController extends StateNotifier<ModesState> {
         currentMode: CallHandlingMode.fromId(modeId),
         isAssistantActive: active,
         dndUntil: until,
+        exceptions: state.exceptions.copyWith(
+          allowStarredContacts: allowStarred,
+          allowRepeatCallersWithin15Min: allowRepeat,
+          emergencyNumbers: region.emergencyNumbers,
+          whitelistNumbers: whitelist,
+        ),
       );
     } catch (_) {}
   }
 
   Future<void> toggleAssistant(bool active) async {
     state = state.copyWith(isAssistantActive: active);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(AppConstants.keyAssistantActive, active);
-    await ReliabilityService.setAssistantActive(active);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(AppConstants.keyAssistantActive, active);
+      await ReliabilityService.setAssistantActive(active);
+    } catch (_) {}
   }
 
   Future<void> setMode(CallHandlingMode mode) async {
@@ -120,27 +139,37 @@ class ModesController extends StateNotifier<ModesState> {
       currentMode: mode,
       isAssistantActive: true,
     );
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AppConstants.keyCallHandlingMode, mode.id);
-    await prefs.setBool(AppConstants.keyAssistantActive, true);
-    await ReliabilityService.setCallHandlingMode(mode.id);
-    await ReliabilityService.setAssistantActive(true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(AppConstants.keyCallHandlingMode, mode.id);
+      await prefs.setBool(AppConstants.keyAssistantActive, true);
+      await ReliabilityService.setCallHandlingMode(mode.id);
+      await ReliabilityService.setAssistantActive(true);
+    } catch (_) {}
   }
 
   Future<void> startDndForDuration(Duration duration) async {
     final until = DateTime.now().add(duration);
+    await startDndUntil(until);
+  }
+
+  Future<void> startDndUntil(DateTime until) async {
     state = state.copyWith(
       dndUntil: until,
       isAssistantActive: true,
     );
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(AppConstants.keyDndUntil, until.millisecondsSinceEpoch);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(AppConstants.keyDndUntil, until.millisecondsSinceEpoch);
+    } catch (_) {}
   }
 
   Future<void> cancelDnd() async {
     state = state.copyWith(clearDndUntil: true);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(AppConstants.keyDndUntil);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(AppConstants.keyDndUntil);
+    } catch (_) {}
   }
 
   Future<void> updateSchedule(DndSchedule schedule) async {
@@ -151,12 +180,44 @@ class ModesController extends StateNotifier<ModesState> {
     bool? allowStarred,
     bool? allowRepeatCallers,
   }) async {
-    state = state.copyWith(
-      exceptions: state.exceptions.copyWith(
-        allowStarredContacts: allowStarred,
-        allowRepeatCallers: allowRepeatCallers,
-      ),
+    final updated = state.exceptions.copyWith(
+      allowStarredContacts: allowStarred,
+      allowRepeatCallersWithin15Min: allowRepeatCallers,
     );
+    state = state.copyWith(exceptions: updated);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (allowStarred != null) {
+        await prefs.setBool('dnd_allow_starred', allowStarred);
+      }
+      if (allowRepeatCallers != null) {
+        await prefs.setBool('dnd_allow_repeat_15min', allowRepeatCallers);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> addWhitelistNumber(String number) async {
+    final clean = number.trim();
+    if (clean.isEmpty || state.exceptions.whitelistNumbers.contains(clean)) return;
+
+    final updated = [...state.exceptions.whitelistNumbers, clean];
+    state = state.copyWith(
+      exceptions: state.exceptions.copyWith(whitelistNumbers: updated),
+    );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('dnd_whitelist_numbers', updated);
+    } catch (_) {}
+  }
+
+  Future<void> removeWhitelistNumber(String number) async {
+    final updated = state.exceptions.whitelistNumbers.where((n) => n != number).toList();
+    state = state.copyWith(
+      exceptions: state.exceptions.copyWith(whitelistNumbers: updated),
+    );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('dnd_whitelist_numbers', updated);
+    } catch (_) {}
   }
 }
-
