@@ -16,17 +16,17 @@ void main() {
     });
 
     test('AutoReplyContact cleans and compares phone numbers accurately', () {
-      const c1 = AutoReplyContact(name: 'Danish', number: '+91 79073 38556');
-      const c2 = AutoReplyContact(name: 'Danish K', number: '07907338556');
-      expect(c1.cleanNumber, '7907338556');
-      expect(c2.cleanNumber, '7907338556');
+      const c1 = AutoReplyContact(name: 'Alex', number: '+1 (555) 123-4567');
+      const c2 = AutoReplyContact(name: 'Alex Doe', number: '5551234567');
+      expect(c1.cleanNumber, '5551234567');
+      expect(c2.cleanNumber, '5551234567');
       expect(c1, equals(c2));
     });
 
-    test('AutoReplyPreset contains valid presets', () {
+    test('AutoReplyPreset contains valid presets without emojis', () {
       expect(AutoReplyPreset.presets.length, greaterThanOrEqualTo(4));
-      final classPreset = AutoReplyPreset.presets.firstWhere((p) => p.title.contains('Class'));
-      expect(classPreset.template, contains('class/lecture'));
+      final general = AutoReplyPreset.presets.firstWhere((p) => p.title == 'General');
+      expect(general.template, contains('unavailable'));
     });
   });
 
@@ -41,7 +41,7 @@ void main() {
 
       expect(controller.debugState.targetMode, AutoMsgTargetMode.all);
       expect(controller.debugState.selectedContacts, isEmpty);
-      expect(controller.debugState.includeWhatsAppLink, isTrue);
+      expect(controller.debugState.whatsAppNumber, isEmpty);
       expect(controller.debugState.emergencyBreakthrough, isTrue);
     });
 
@@ -49,28 +49,30 @@ void main() {
       final controller = AutoMessagingController();
       await controller.loadSettings();
 
-      const contact = AutoReplyContact(name: 'Ameen', number: '+91 94471 23456');
+      const contact = AutoReplyContact(name: 'Jordan', number: '+15559876543');
       await controller.addContact(contact);
 
       expect(controller.debugState.selectedContacts.length, 1);
-      expect(controller.debugState.selectedContacts.first.cleanNumber, '9447123456');
+      expect(controller.debugState.selectedContacts.first.cleanNumber, '5559876543');
 
       final prefs = await SharedPreferences.getInstance();
       final numbersJson = prefs.getString(AutoMessagingController.keyNumbers);
-      expect(numbersJson, contains('9447123456'));
+      expect(numbersJson, contains('5559876543'));
 
       await controller.removeContact(contact);
       expect(controller.debugState.selectedContacts, isEmpty);
     });
 
-    test('Preview message dynamically appends WhatsApp link and Emergency note', () async {
+    test('Preview message dynamically appends messaging link when configured', () async {
       final controller = AutoMessagingController();
       await controller.loadSettings();
-      await controller.setCustomMessage('In class right now.');
+      await controller.setCustomMessage('Currently occupied.');
+      await controller.toggleIncludeWhatsApp(true);
+      await controller.setWhatsAppNumber('+15551234567');
 
       final preview = controller.debugState.previewMessage;
-      expect(preview, contains('In class right now.'));
-      expect(preview, contains('WhatsApp: https://wa.me/917907338556'));
+      expect(preview, contains('Currently occupied.'));
+      expect(preview, contains('Chat: https://wa.me/15551234567'));
       expect(preview, contains('If urgent, call back within 3 mins'));
     });
   });

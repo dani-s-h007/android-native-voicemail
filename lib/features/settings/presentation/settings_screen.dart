@@ -146,7 +146,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                             AppSpacing.vSpace2,
                             Text(
-                              'DID: ${AppConstants.defaultExotelKeralaDid} (Kerala)',
+                              AppConfig.appTagline,
                               style: context.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -154,11 +154,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             AppSpacing.vSpace4,
                             InkWell(
                               onTap: () async {
-                                final uri = Uri.parse(AppConfig.developerWebsite);
+                                final uri = Uri.parse(AppConfig.developerWebsiteUrl);
                                 if (await canLaunchUrl(uri)) launchUrl(uri);
                               },
                               child: Text(
-                                'by ${AppConfig.developerName} (danishk.web.app)',
+                                AppConfig.developerName.contains('TODO_UPDATE')
+                                    ? AppConfig.appName
+                                    : 'by ${AppConfig.developerName}',
                                 style: context.textTheme.labelSmall?.copyWith(
                                   color: colorScheme.primary,
                                   decoration: TextDecoration.underline,

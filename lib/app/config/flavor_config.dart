@@ -20,9 +20,12 @@ class FlavorConfig {
   });
 
   static late final FlavorConfig instance;
+  static bool _isInitialized = false;
+  static bool get isInitialized => _isInitialized;
 
   static void initialize({required FlavorConfig config}) {
     instance = config;
+    _isInitialized = true;
   }
 }
 

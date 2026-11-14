@@ -8,10 +8,10 @@ import 'package:voicemail/design_system/theme/app_theme.dart';
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 final useDynamicColorProvider = StateProvider<bool>((ref) => true);
 
-class VaniVoicemailApp extends ConsumerWidget {
+class CallAssistantApp extends ConsumerWidget {
   final bool isOnboardingCompleted;
 
-  const VaniVoicemailApp({
+  const CallAssistantApp({
     super.key,
     required this.isOnboardingCompleted,
   });
@@ -43,3 +43,6 @@ class VaniVoicemailApp extends ConsumerWidget {
     );
   }
 }
+
+/// Backwards-compatible alias
+typedef VaniVoicemailApp = CallAssistantApp;

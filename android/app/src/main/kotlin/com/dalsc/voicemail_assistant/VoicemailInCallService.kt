@@ -229,14 +229,14 @@ class VoicemailInCallService : InCallService() {
             msg = prefs.getString("flutter.dnd_msg", null)
         }
         if (msg.isNullOrBlank()) {
-            msg = "Hi, Danish here. I'm unable to take your call right now. Please message me on WhatsApp or SMS. Thanks!"
+            msg = "Hello. I am currently unavailable. Please leave a voicemail or send a message."
         }
 
-        val includeWa = prefs.getBoolean("flutter.auto_msg_include_whatsapp", true)
-        val waNumber = prefs.getString("flutter.auto_msg_whatsapp_number", "7907338556") ?: "7907338556"
-        val cleanWa = waNumber.filter { it.isDigit() }.let { if (it.length == 10) "91$it" else it }
+        val includeWa = prefs.getBoolean("flutter.auto_msg_include_whatsapp", false)
+        val waNumber = prefs.getString("flutter.auto_msg_whatsapp_number", "") ?: ""
+        val cleanWa = waNumber.filter { it.isDigit() }
         if (includeWa && cleanWa.isNotEmpty() && !msg.contains("wa.me")) {
-            msg += "\n\nWhatsApp: https://wa.me/$cleanWa"
+            msg += "\n\nChat: https://wa.me/$cleanWa"
         }
 
         val allowRepeat = prefs.getBoolean("flutter.dnd_allow_repeat", true)

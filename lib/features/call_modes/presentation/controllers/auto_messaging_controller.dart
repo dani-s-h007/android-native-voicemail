@@ -15,19 +15,20 @@ class AutoMessagingState {
   const AutoMessagingState({
     this.targetMode = AutoMsgTargetMode.all,
     this.selectedContacts = const [],
-    this.customMessage = "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!",
-    this.includeWhatsAppLink = true,
-    this.whatsAppNumber = '7907338556',
+    this.customMessage = 'Hello. I am currently unavailable. Please leave a voicemail or send a text message.',
+    this.includeWhatsAppLink = false,
+    this.whatsAppNumber = '',
     this.emergencyBreakthrough = true,
     this.isSaving = false,
   });
 
   String get previewMessage {
     var msg = customMessage.trim();
-    if (includeWhatsAppLink && whatsAppNumber.isNotEmpty) {
+    if (includeWhatsAppLink && whatsAppNumber.trim().isNotEmpty) {
       final clean = whatsAppNumber.replaceAll(RegExp(r'[^0-9]'), '');
-      final formatted = clean.length == 10 ? '91$clean' : clean;
-      msg += '\n\nWhatsApp: https://wa.me/$formatted';
+      if (clean.isNotEmpty) {
+        msg += '\n\nChat: https://wa.me/$clean';
+      }
     }
     if (emergencyBreakthrough) {
       msg += '\n(If urgent, call back within 3 mins to ring through)';
@@ -95,10 +96,10 @@ class AutoMessagingController extends StateNotifier<AutoMessagingState> {
 
       final msg = prefs.getString(keyActiveGreeting) ??
           prefs.getString(keyDndMsg) ??
-          "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!";
+          'Hello. I am currently unavailable. Please leave a voicemail or send a text message.';
 
-      final includeWa = prefs.getBool(keyIncludeWa) ?? true;
-      final waNumber = prefs.getString(keyWaNumber) ?? '7907338556';
+      final includeWa = prefs.getBool(keyIncludeWa) ?? false;
+      final waNumber = prefs.getString(keyWaNumber) ?? '';
       final emergency = prefs.getBool(keyRepeatAllow) ?? true;
 
       state = state.copyWith(

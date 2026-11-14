@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:voicemail/app/app.dart';
 import 'package:voicemail/app/config/app_config.dart';
+import 'package:voicemail/app/config/config_validator.dart';
 import 'package:voicemail/app/config/flavor_config.dart';
 import 'package:voicemail/core/constants/app_constants.dart';
 import 'package:voicemail/core/logging/app_logger.dart';
@@ -10,19 +11,22 @@ import 'package:voicemail/core/logging/app_logger.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Flavor Configuration (defaulting to production-ready enterprise flavor)
+  // Initialize Flavor Configuration (defaulting to dev for mock demo & development)
   FlavorConfig.initialize(
     config: const FlavorConfig(
-      flavor: Flavor.prod,
+      flavor: Flavor.dev,
       appTitle: AppConfig.appName,
-      applicationId: 'com.dalsc.voicemail_assistant',
-      enableDebugLogging: false,
-      mockServicesByDefault: false,
+      applicationId: AppConfig.packageIdDev,
+      enableDebugLogging: true,
+      mockServicesByDefault: true,
     ),
   );
 
   // Initialize App Identity and Dynamic Package Information
   await AppConfig.initialize();
+
+  // Run build-time / startup configuration validation
+  ConfigValidator.validate();
 
   bool isOnboardingCompleted = false;
 

@@ -94,40 +94,40 @@ class AutoReplyContact {
 
 class AutoReplyPreset {
   final String title;
-  final String iconEmoji;
+  final IconData icon;
   final String template;
 
   const AutoReplyPreset({
     required this.title,
-    required this.iconEmoji,
+    required this.icon,
     required this.template,
   });
 
   static const List<AutoReplyPreset> presets = [
     AutoReplyPreset(
       title: 'General',
-      iconEmoji: '💬',
-      template: "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!",
-    ),
-    AutoReplyPreset(
-      title: 'In Class / College',
-      iconEmoji: '🎓',
-      template: "Hi, Danish here. I'm currently attending class/lecture and cannot take calls. Please message me.",
-    ),
-    AutoReplyPreset(
-      title: 'Driving',
-      iconEmoji: '🚗',
-      template: "Hi, I'm driving right now and can't answer safely. I'll get back to you once parked.",
+      icon: Icons.chat_bubble_outline_rounded,
+      template: 'Hello. I am currently unavailable. Please leave a voicemail or send a text message.',
     ),
     AutoReplyPreset(
       title: 'In a Meeting',
-      iconEmoji: '💼',
-      template: "Hi, I'm in an important meeting. Please text me the details or reach out on WhatsApp.",
+      icon: Icons.business_center_outlined,
+      template: 'Hello. I am currently in a meeting and cannot answer. Please message me with details.',
+    ),
+    AutoReplyPreset(
+      title: 'Driving',
+      icon: Icons.directions_car_outlined,
+      template: 'Hello. I am driving and cannot answer safely. I will return your call once parked.',
+    ),
+    AutoReplyPreset(
+      title: 'Busy / In Class',
+      icon: Icons.school_outlined,
+      template: 'Hello. I am currently occupied and unable to take calls. Please send a message.',
     ),
     AutoReplyPreset(
       title: 'Do Not Disturb',
-      iconEmoji: '😴',
-      template: "Hi, I'm currently unavailable on DND. Please drop a message and I'll reply soon.",
+      icon: Icons.do_not_disturb_on_outlined,
+      template: 'Hello. I have Do Not Disturb active. Please leave a message and I will reply soon.',
     ),
   ];
 }

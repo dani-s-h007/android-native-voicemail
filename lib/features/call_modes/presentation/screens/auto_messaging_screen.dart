@@ -347,9 +347,8 @@ class _AutoMessagingScreenState extends ConsumerState<AutoMessagingScreen> {
                     child: TextField(
                       controller: _waNumberController,
                       decoration: const InputDecoration(
-                        labelText: 'Your WhatsApp Phone Number',
-                        hintText: 'e.g. 7907338556',
-                        prefixText: '+91 ',
+                        labelText: 'Your Messaging / WhatsApp Number',
+                        hintText: 'Include country code (e.g. +1..., +44..., +91...)',
                         prefixIcon: Icon(Icons.phone_iphone_rounded, color: Colors.green),
                         isDense: true,
                       ),
@@ -396,7 +395,7 @@ class _AutoMessagingScreenState extends ConsumerState<AutoMessagingScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ActionChip(
-                    avatar: Text(preset.iconEmoji, style: const TextStyle(fontSize: 14)),
+                    avatar: Icon(preset.icon, size: 16),
                     label: Text(preset.title),
                     onPressed: () {
                       _messageController.text = preset.template;
