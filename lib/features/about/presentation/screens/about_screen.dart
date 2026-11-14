@@ -82,7 +82,7 @@ class AboutScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '100% On-Device • Zero Cloud Storage',
+                    'On-Device Processing • Local Storage',
                     style: context.textTheme.labelSmall?.copyWith(
                       color: colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -204,7 +204,7 @@ class AboutScreen extends StatelessWidget {
                 ),
                 AppSpacing.vSpace12,
                 _buildChangelogItem('• Google Material 3 design system with dynamic color theming.'),
-                _buildChangelogItem('• 100% On-Device local SQLite storage; zero permanent cloud backups.'),
+                _buildChangelogItem('• Local SQLite storage architecture; zero permanent cloud backups.'),
                 _buildChangelogItem('• Universal carrier forwarding support with custom MMI codes for any mobile network.'),
                 _buildChangelogItem('• Offline multilingual speech transcripts and dynamic locale switching.'),
                 _buildChangelogItem('• Background watchdog service protecting against aggressive OEM task killers.'),

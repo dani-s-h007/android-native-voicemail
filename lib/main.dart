@@ -29,12 +29,22 @@ void main() async {
   ConfigValidator.validate();
 
   bool isOnboardingCompleted = false;
+  ThemeMode initialThemeMode = ThemeMode.light;
 
   try {
     final prefs = await SharedPreferences.getInstance();
     isOnboardingCompleted = prefs.getBool(AppConstants.keyOnboardingComplete) ??
         prefs.getBool('onboarding_completed') ??
         false;
+
+    final savedThemeStr = prefs.getString(AppConstants.keySelectedThemeMode);
+    if (savedThemeStr == 'dark') {
+      initialThemeMode = ThemeMode.dark;
+    } else if (savedThemeStr == 'system') {
+      initialThemeMode = ThemeMode.system;
+    } else {
+      initialThemeMode = ThemeMode.light;
+    }
   } catch (e) {
     AppLogger.e('Main', 'Preferences initialization error', e);
   }
@@ -42,6 +52,9 @@ void main() async {
   // Draw UI immediately to prevent Android splash-screen timeout / ANR
   runApp(
     ProviderScope(
+      overrides: [
+        themeModeProvider.overrideWith((ref) => initialThemeMode),
+      ],
       child: VaniVoicemailApp(isOnboardingCompleted: isOnboardingCompleted),
     ),
   );

@@ -74,7 +74,6 @@ class _VoicemailInboxScreenState extends ConsumerState<VoicemailInboxScreen> {
     } else {
       appBar = AppAppBar(
         title: 'Voicemail',
-        subtitle: '100% On-Device Private Inbox',
         showBackButton: false,
         actions: [
           IconButton(

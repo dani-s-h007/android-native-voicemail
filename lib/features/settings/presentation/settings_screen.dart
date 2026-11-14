@@ -719,25 +719,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ListTile(
               title: const Text('System Default'),
               leading: const Icon(Icons.brightness_auto),
-              onTap: () {
+              onTap: () async {
                 ref.read(themeModeProvider.notifier).state = ThemeMode.system;
-                Navigator.pop(ctx);
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(AppConstants.keySelectedThemeMode, 'system');
+                if (ctx.mounted) Navigator.pop(ctx);
               },
             ),
             ListTile(
               title: const Text('Light Theme'),
               leading: const Icon(Icons.light_mode),
-              onTap: () {
+              onTap: () async {
                 ref.read(themeModeProvider.notifier).state = ThemeMode.light;
-                Navigator.pop(ctx);
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(AppConstants.keySelectedThemeMode, 'light');
+                if (ctx.mounted) Navigator.pop(ctx);
               },
             ),
             ListTile(
               title: const Text('Dark Theme'),
               leading: const Icon(Icons.dark_mode),
-              onTap: () {
+              onTap: () async {
                 ref.read(themeModeProvider.notifier).state = ThemeMode.dark;
-                Navigator.pop(ctx);
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(AppConstants.keySelectedThemeMode, 'dark');
+                if (ctx.mounted) Navigator.pop(ctx);
               },
             ),
           ],

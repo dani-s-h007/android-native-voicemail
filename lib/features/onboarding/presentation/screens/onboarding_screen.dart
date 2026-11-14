@@ -20,10 +20,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _OnboardingPageData(
       icon: Icons.shield_outlined,
       iconColor: Colors.blue,
-      title: '100% On-Device Privacy',
-      headline: 'Zero Permanent Cloud Storage',
+      title: 'On-Device Privacy & Security',
+      headline: 'Local Device Storage',
       description:
-          'Your voicemails, audio recordings, and transcripts never leave your phone. Everything is processed and stored locally in a secure database.',
+          'Your voicemails, audio recordings, and transcripts are stored securely on your device. Everything is processed locally in an encrypted database.',
     ),
     _OnboardingPageData(
       icon: Icons.sim_card_outlined,

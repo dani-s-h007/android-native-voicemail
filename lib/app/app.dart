@@ -5,7 +5,7 @@ import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/app/router/app_router.dart';
 import 'package:voicemail/design_system/theme/app_theme.dart';
 
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 final useDynamicColorProvider = StateProvider<bool>((ref) => true);
 
 class CallAssistantApp extends ConsumerWidget {

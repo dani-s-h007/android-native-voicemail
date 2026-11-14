@@ -5,7 +5,7 @@ enum CallHandlingMode {
     id: 'MODE_1_SERVER_RELAY',
     title: 'Standard Server Greeting',
     subtitle: 'Carrier forwards busy or unanswered calls to voicemail relay',
-    costDescription: 'Standard carrier pulse',
+    costDescription: 'Standard carrier rates',
     icon: Icons.cloud_outlined,
     badgeText: 'CARRIER RELAY',
   ),
@@ -13,7 +13,7 @@ enum CallHandlingMode {
     id: 'MODE_2_AUTO_DECLINE',
     title: 'Auto-Decline with Message',
     subtitle: 'Screen calls silently and dispatch instant SMS or messaging link',
-    costDescription: '100% Free & Local',
+    costDescription: 'Standard SMS rates apply • Local processing',
     icon: Icons.phone_disabled_outlined,
     badgeText: 'LOCAL SCREENING',
   ),
@@ -21,7 +21,7 @@ enum CallHandlingMode {
     id: 'MODE_3_AUTO_ANSWER',
     title: 'Auto-Answer Assistant',
     subtitle: 'Answers locally on device, speaks greeting, and transcribes speech',
-    costDescription: '100% Free & Local (On-Device)',
+    costDescription: 'On-device assistant • Local processing',
     icon: Icons.voicemail_rounded,
     badgeText: 'ON-DEVICE',
   ),
@@ -29,9 +29,9 @@ enum CallHandlingMode {
     id: 'MODE_4_SILENT_DND',
     title: 'Silent DND Mode',
     subtitle: 'Total silence during meetings, focus, and quiet hours',
-    costDescription: '100% Free & Local',
+    costDescription: 'Local device management',
     icon: Icons.do_not_disturb_on_outlined,
-    badgeText: 'ZERO DISTRACTION',
+    badgeText: 'DO NOT DISTURB',
   );
 
   final String id;

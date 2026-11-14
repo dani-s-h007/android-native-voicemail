@@ -44,7 +44,7 @@ class TelephonyService {
     }
   }
 
-  /// Directly dials the MMI code using the Android native phone dialer (instant, 100% reliable)
+  /// Directly dials the MMI code using the Android native phone dialer (standard telephony intent)
   static Future<Map<String, dynamic>> dialMmi(String ussdCode, {int subId = -1}) async {
     try {
       final dynamic result = await _channel.invokeMethod('dialMmiDirect', {

@@ -51,9 +51,9 @@ void main() {
       await tester.pumpWidget(buildTestableWidget(const OnboardingScreen()));
       await tester.pumpAndSettle();
 
-      // Slide 1: 100% On-Device Privacy
-      expect(find.text('100% On-Device Privacy'), findsOneWidget);
-      expect(find.text('Zero Permanent Cloud Storage'), findsOneWidget);
+      // Slide 1: On-Device Privacy & Security
+      expect(find.text('On-Device Privacy & Security'), findsOneWidget);
+      expect(find.text('Local Device Storage'), findsOneWidget);
 
       // Tap Next to navigate to Slide 2
       final nextButton = find.text('Next');
