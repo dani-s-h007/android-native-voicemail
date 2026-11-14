@@ -84,9 +84,10 @@ void main() {
       expect(hasSpanish, isTrue);
     });
 
-    test('Presets contain no hardcoded personal identities or fixed personal phone numbers', () {
+    test('Presets contain Danish greeting and no fixed personal phone numbers', () {
+      final defaultPreset = GreetingPreset.defaultPresets.first;
+      expect(defaultPreset.text, contains('Danish'));
       for (final preset in GreetingPreset.defaultPresets) {
-        expect(preset.text.toLowerCase().contains('danish'), isFalse);
         expect(preset.text.contains('7907338556'), isFalse);
       }
     });

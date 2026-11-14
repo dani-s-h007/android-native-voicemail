@@ -18,7 +18,7 @@ class GreetingPreset {
       id: 'preset_general',
       title: 'General (Default)',
       text:
-          'Hello. I am unavailable to take your call right now. Please leave a voicemail after the tone or send a text message. Thank you.',
+          "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!",
       language: 'English',
       assignedGroup: 'All Callers',
     ),

@@ -15,7 +15,7 @@ class AutoMessagingState {
   const AutoMessagingState({
     this.targetMode = AutoMsgTargetMode.all,
     this.selectedContacts = const [],
-    this.customMessage = 'Hello. I am currently unavailable. Please leave a voicemail or send a text message.',
+    this.customMessage = "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!",
     this.includeWhatsAppLink = false,
     this.whatsAppNumber = '',
     this.emergencyBreakthrough = true,
@@ -100,7 +100,7 @@ class AutoMessagingController extends StateNotifier<AutoMessagingState> {
 
       final msg = prefs.getString(keyActiveGreeting) ??
           prefs.getString(keyDndMsg) ??
-          'Hello. I am currently unavailable. Please leave a voicemail or send a text message.';
+          "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!";
 
       final includeWa = prefs.getBool(keyIncludeWa) ?? false;
       final waNumber = prefs.getString(keyWaNumber) ?? '';

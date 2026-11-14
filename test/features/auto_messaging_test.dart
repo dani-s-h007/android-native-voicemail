@@ -26,7 +26,7 @@ void main() {
     test('AutoReplyPreset contains valid presets without emojis', () {
       expect(AutoReplyPreset.presets.length, greaterThanOrEqualTo(4));
       final general = AutoReplyPreset.presets.firstWhere((p) => p.title == 'General');
-      expect(general.template, contains('unavailable'));
+      expect(general.template, contains('Danish'));
     });
   });
 

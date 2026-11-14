@@ -107,7 +107,7 @@ class AutoReplyPreset {
     AutoReplyPreset(
       title: 'General',
       icon: Icons.chat_bubble_outline_rounded,
-      template: 'Hello. I am currently unavailable. Please leave a voicemail or send a text message.',
+      template: "Hi, Danish here. I can't take your call right now. Please WhatsApp or SMS me. Thanks!",
     ),
     AutoReplyPreset(
       title: 'In a Meeting',
