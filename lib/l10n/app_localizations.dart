@@ -16,16 +16,16 @@ class AppLocalizations {
 
   static const List<Locale> supportedLocales = [
     Locale('en'), // English
+    Locale('es'), // Spanish
+    Locale('fr'), // French
+    Locale('de'), // German
     Locale('hi'), // Hindi
     Locale('ml'), // Malayalam
-    Locale('ta'), // Tamil
-    Locale('te'), // Telugu
-    Locale('kn'), // Kannada
   ];
 
   static const Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'app_name': 'Vani Voicemail',
+      'app_name': 'Voicemail Assistant',
       'tab_voicemail': 'Voicemail',
       'tab_modes': 'Modes',
       'tab_greetings': 'Greetings',
@@ -40,8 +40,56 @@ class AppLocalizations {
       'paused': 'Paused',
       'save': 'Save',
     },
+    'es': {
+      'app_name': 'Asistente de Buzón de Voz',
+      'tab_voicemail': 'Buzón de Voz',
+      'tab_modes': 'Modos',
+      'tab_greetings': 'Saludos',
+      'tab_settings': 'Ajustes',
+      'inbox_zero': 'Bandeja Vacía',
+      'call_back': 'Devolver llamada',
+      'copy_text': 'Copiar texto',
+      'share': 'Compartir',
+      'delete': 'Eliminar',
+      'star': 'Destacar',
+      'active': 'Activo',
+      'paused': 'Pausado',
+      'save': 'Guardar',
+    },
+    'fr': {
+      'app_name': 'Assistant Messagerie Vocale',
+      'tab_voicemail': 'Messagerie',
+      'tab_modes': 'Modes',
+      'tab_greetings': 'Annonces',
+      'tab_settings': 'Paramètres',
+      'inbox_zero': 'Boîte de réception vide',
+      'call_back': 'Rappeler',
+      'copy_text': 'Copier le texte',
+      'share': 'Partager',
+      'delete': 'Supprimer',
+      'star': 'Favori',
+      'active': 'Actif',
+      'paused': 'En pause',
+      'save': 'Enregistrer',
+    },
+    'de': {
+      'app_name': 'Mailbox-Assistent',
+      'tab_voicemail': 'Mailbox',
+      'tab_modes': 'Modi',
+      'tab_greetings': 'Ansagen',
+      'tab_settings': 'Einstellungen',
+      'inbox_zero': 'Keine Nachrichten',
+      'call_back': 'Zurückrufen',
+      'copy_text': 'Text kopieren',
+      'share': 'Teilen',
+      'delete': 'Löschen',
+      'star': 'Markieren',
+      'active': 'Aktiv',
+      'paused': 'Pausiert',
+      'save': 'Speichern',
+    },
     'hi': {
-      'app_name': 'वाणी वॉयसमेल',
+      'app_name': 'वॉयसमेल सहायक',
       'tab_voicemail': 'वॉयसमेल',
       'tab_modes': 'मोड्स',
       'tab_greetings': 'अभिवादन',
@@ -57,7 +105,7 @@ class AppLocalizations {
       'save': 'सहेजें',
     },
     'ml': {
-      'app_name': 'വാണി വോയ്സ്മെയിൽ',
+      'app_name': 'വോയ്സ്മെയിൽ അസിസ്റ്റന്റ്',
       'tab_voicemail': 'വോയ്സ്മെയിൽ',
       'tab_modes': 'മോഡുകൾ',
       'tab_greetings': 'ഗ്രീറ്റിങ്സ്',
@@ -72,75 +120,22 @@ class AppLocalizations {
       'paused': 'താൽക്കാലികമായി നിർത്തി',
       'save': 'സേവ് ചെയ്യുക',
     },
-    'ta': {
-      'app_name': 'வாணி குரலஞ்சல்',
-      'tab_voicemail': 'குரலஞ்சல்',
-      'tab_modes': 'முறைகள்',
-      'tab_greetings': 'வாழ்த்துகள்',
-      'tab_settings': 'அமைப்புகள்',
-      'inbox_zero': 'புதிய செய்திகள் இல்லை',
-      'call_back': 'மீண்டும் அழைக்கவும்',
-      'copy_text': 'நகலெடு',
-      'share': 'பகிர்',
-      'delete': 'நீக்கு',
-      'star': 'நட்சத்திரம்',
-      'active': 'செயலில் உள்ளது',
-      'paused': 'இடைநிறுத்தப்பட்டது',
-      'save': 'சேமி',
-    },
-    'te': {
-      'app_name': 'వాణి వాయిస్మెయిల్',
-      'tab_voicemail': 'వాయిస్మెయిల్',
-      'tab_modes': 'మోడ్లు',
-      'tab_greetings': 'గ్రీటింగ్స్',
-      'tab_settings': 'సెట్టింగ్‌లు',
-      'inbox_zero': 'కొత్త సందేశాలు లేవు',
-      'call_back': 'తిరిగి కాల్ చేయండి',
-      'copy_text': 'కాపీ చేయండి',
-      'share': 'షేర్',
-      'delete': 'తొలగించు',
-      'star': 'స్టార్',
-      'active': 'యాక్టివ్',
-      'paused': 'పాజ్ చేయబడింది',
-      'save': 'సేవ్ చేయండి',
-    },
-    'kn': {
-      'app_name': 'ವಾಣಿ ಧ್ವನಿಮೇಲ್',
-      'tab_voicemail': 'ಧ್ವನಿಮೇಲ್',
-      'tab_modes': 'ಮೋಡ್‌ಗಳು',
-      'tab_greetings': 'ಶುಭಾಶಯಗಳು',
-      'tab_settings': 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
-      'inbox_zero': 'ಯಾವುದೇ ಸಂದೇಶಗಳಿಲ್ಲ',
-      'call_back': 'ಮರಳಿ ಕರೆ ಮಾಡಿ',
-      'copy_text': 'ನಕಲಿಸಿ',
-      'share': 'ಹಂಚಿಕೊಳ್ಳಿ',
-      'delete': 'ಅಳಿಸಿ',
-      'star': 'ಸ್ಟಾರ್',
-      'active': 'ಸಕ್ರಿಯ',
-      'paused': 'ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ',
-      'save': 'ಉಳಿಸಿ',
-    },
   };
 
-  String translate(String key) {
-    final lang = locale.languageCode;
-    return _localizedValues[lang]?[key] ?? _localizedValues['en']?[key] ?? key;
-  }
-
-  String get appName => translate('app_name');
-  String get tabVoicemail => translate('tab_voicemail');
-  String get tabModes => translate('tab_modes');
-  String get tabGreetings => translate('tab_greetings');
-  String get tabSettings => translate('tab_settings');
-  String get inboxZero => translate('inbox_zero');
-  String get callBack => translate('call_back');
-  String get copyText => translate('copy_text');
-  String get share => translate('share');
-  String get delete => translate('delete');
-  String get star => translate('star');
-  String get active => translate('active');
-  String get paused => translate('paused');
-  String get save => translate('save');
+  String get appName => _localizedValues[locale.languageCode]?['app_name'] ?? 'Voicemail Assistant';
+  String get tabVoicemail => _localizedValues[locale.languageCode]?['tab_voicemail'] ?? 'Voicemail';
+  String get tabModes => _localizedValues[locale.languageCode]?['tab_modes'] ?? 'Modes';
+  String get tabGreetings => _localizedValues[locale.languageCode]?['tab_greetings'] ?? 'Greetings';
+  String get tabSettings => _localizedValues[locale.languageCode]?['tab_settings'] ?? 'Settings';
+  String get inboxZero => _localizedValues[locale.languageCode]?['inbox_zero'] ?? 'Inbox Zero';
+  String get callBack => _localizedValues[locale.languageCode]?['call_back'] ?? 'Call Back';
+  String get copyText => _localizedValues[locale.languageCode]?['copy_text'] ?? 'Copy Text';
+  String get share => _localizedValues[locale.languageCode]?['share'] ?? 'Share';
+  String get delete => _localizedValues[locale.languageCode]?['delete'] ?? 'Delete';
+  String get star => _localizedValues[locale.languageCode]?['star'] ?? 'Star';
+  String get active => _localizedValues[locale.languageCode]?['active'] ?? 'Active';
+  String get paused => _localizedValues[locale.languageCode]?['paused'] ?? 'Paused';
+  String get save => _localizedValues[locale.languageCode]?['save'] ?? 'Save';
 }
 
 class _AppLocalizationsDelegate
@@ -149,7 +144,9 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'hi', 'ml', 'ta', 'te', 'kn'].contains(locale.languageCode);
+    return AppLocalizations.supportedLocales
+        .map((e) => e.languageCode)
+        .contains(locale.languageCode);
   }
 
   @override
@@ -160,4 +157,3 @@ class _AppLocalizationsDelegate
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
-

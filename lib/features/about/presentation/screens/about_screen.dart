@@ -9,14 +9,17 @@ class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   Future<void> _openDeveloperWebsite() async {
-    final uri = Uri.parse(AppConfig.developerWebsite);
-    if (await canLaunchUrl(uri)) launchUrl(uri);
+    final uri = Uri.parse(AppConfig.developerWebsiteUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
   }
 
   Future<void> _sendEmail(BuildContext context) async {
-    final uri = Uri.parse('mailto:${AppConfig.supportEmail}?subject=Vani%20Voicemail%20Support');
+    final subject = Uri.encodeComponent('${AppConfig.appName} Support');
+    final uri = Uri.parse('mailto:${AppConfig.supportEmail}?subject=$subject');
     if (await canLaunchUrl(uri)) {
-      launchUrl(uri);
+      await launchUrl(uri);
     } else {
       if (context.mounted) {
         context.showSnackBar('Support email: ${AppConfig.supportEmail}');
@@ -27,10 +30,15 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final devInitial = AppConfig.developerName.isNotEmpty
+        ? AppConfig.developerName[0].toUpperCase()
+        : 'A';
+    final websiteHost = Uri.tryParse(AppConfig.developerWebsiteUrl)?.host ??
+        AppConfig.developerWebsiteUrl;
 
     return AppScaffold(
       appBar: const AppAppBar(
-        title: 'About Vani Voicemail',
+        title: 'About ${AppConfig.appName}',
       ),
       body: ListView(
         padding: AppSpacing.padding16,
@@ -97,7 +105,10 @@ class AboutScreen extends StatelessWidget {
                     CircleAvatar(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
-                      child: const Text('DK', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(
+                        devInitial,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                     AppSpacing.hSpace14,
                     Expanded(
@@ -112,7 +123,7 @@ class AboutScreen extends StatelessWidget {
                           ),
                           AppSpacing.vSpace2,
                           Text(
-                            'Lead Product Designer & Principal Engineer',
+                            'Engineering & Product Design',
                             style: context.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -128,7 +139,7 @@ class AboutScreen extends StatelessWidget {
                     minimumSize: const Size.fromHeight(42),
                   ),
                   icon: const Icon(Icons.language),
-                  label: const Text('Visit Portfolio: danishk.web.app'),
+                  label: Text('Visit Website ($websiteHost)'),
                   onPressed: _openDeveloperWebsite,
                 ),
                 AppSpacing.vSpace8,
@@ -137,7 +148,7 @@ class AboutScreen extends StatelessWidget {
                     minimumSize: const Size.fromHeight(42),
                   ),
                   icon: const Icon(Icons.mail_outline),
-                  label: Text('Contact: ${AppConfig.supportEmail}'),
+                  label: const Text('Contact: ${AppConfig.supportEmail}'),
                   onPressed: () => _sendEmail(context),
                 ),
               ],
@@ -153,7 +164,7 @@ class AboutScreen extends StatelessWidget {
                 AppListTile(
                   leading: const Icon(Icons.system_update_rounded),
                   title: const Text('Check for Updates'),
-                  subtitle: const Text('Running latest stable corporate release'),
+                  subtitle: const Text('Running latest stable release'),
                   onTap: () {
                     context.showSnackBar('You are on the latest release: v${AppConfig.version}');
                   },
@@ -194,8 +205,8 @@ class AboutScreen extends StatelessWidget {
                 AppSpacing.vSpace12,
                 _buildChangelogItem('• Google Material 3 design system with dynamic color theming.'),
                 _buildChangelogItem('• 100% On-Device local SQLite storage; zero permanent cloud backups.'),
-                _buildChangelogItem('• Native Indian VoLTE carrier forwarding (*403/*67#) for Jio & Airtel.'),
-                _buildChangelogItem('• Offline multilingual speech transcripts in English, Hindi, and Malayalam.'),
+                _buildChangelogItem('• Universal carrier forwarding support with custom MMI codes for any mobile network.'),
+                _buildChangelogItem('• Offline multilingual speech transcripts and dynamic locale switching.'),
                 _buildChangelogItem('• Background watchdog service protecting against aggressive OEM task killers.'),
               ],
             ),

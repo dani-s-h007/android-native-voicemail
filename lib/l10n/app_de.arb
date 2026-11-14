@@ -1,0 +1,17 @@
+{
+  "@@locale": "de",
+  "appName": "Mailbox-Assistent",
+  "tabVoicemail": "Mailbox",
+  "tabModes": "Modi",
+  "tabGreetings": "Ansagen",
+  "tabSettings": "Einstellungen",
+  "inboxZero": "Keine Nachrichten",
+  "callBack": "Zurückrufen",
+  "copyText": "Text kopieren",
+  "share": "Teilen",
+  "delete": "Löschen",
+  "star": "Markieren",
+  "active": "Aktiv",
+  "paused": "Pausiert",
+  "save": "Speichern"
+}

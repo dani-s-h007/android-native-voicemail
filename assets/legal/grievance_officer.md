@@ -1,16 +1,21 @@
-# Grievance Redressal & Compliance Officer
+# Grievance Redressal & Legal Compliance Contact
 
-In accordance with Rule 3(1)(k) of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, and the Digital Personal Data Protection Act, 2023:
+> **LEGAL NOTICE & DRAFT TEMPLATE**: Compliance officer contact draft for {{APP_NAME}} in {{DEFAULT_REGION}}. Must be reviewed by qualified legal counsel for your specific operating jurisdiction before commercial release.
 
-## Grievance Officer Details
-- **Name:** Danish K
-- **Role:** Lead Engineer & Designated Grievance Officer
-- **Email:** `support@danishk.web.app`
-- **Official Website:** [https://danishk.web.app](https://danishk.web.app)
-- **Jurisdiction:** Kozhikode (Calicut), Kerala, India
+**Company:** {{COMPANY_NAME}}  
+**Application:** {{APP_NAME}}  
+**Jurisdiction:** {{DEFAULT_REGION}}  
 
-## Response Time & Procedure
-- **Acknowledgment:** Any grievance or privacy inquiry received will be acknowledged within 24 hours.
-- **Resolution:** All inquiries, requests for data verification, or legal notices will be addressed and resolved within a maximum of 15 calendar days.
-- **Data Erasure Inquiries:** Users may execute immediate on-device data erasure directly via Settings > "Delete All Voicemails" without needing prior administrative clearance.
+---
 
+## Designated Grievance / Compliance Officer
+- **Officer Name:** {{GRIEVANCE_OFFICER_NAME}}
+- **Role:** Designated Compliance & Grievance Officer
+- **Email:** [{{GRIEVANCE_OFFICER_CONTACT}}](mailto:{{GRIEVANCE_OFFICER_CONTACT}})
+- **Official Address:** {{COMPANY_ADDRESS}}
+- **Website:** [{{DEVELOPER_WEBSITE}}]({{DEVELOPER_WEBSITE}})
+
+## Redressal Procedure
+- **Acknowledgment:** Any privacy inquiry or grievance received will be acknowledged within 24 hours.
+- **Resolution:** All inquiries or verification requests will be addressed and resolved within a maximum of 15 calendar days.
+- **Immediate Data Erasure:** Users can execute immediate local data erasure directly via Settings > "Delete All Voicemails" without prior clearance.

@@ -1,25 +1,30 @@
-# Google Play Data Safety Declaration
+# Google Play Data Safety Disclosure
 
-**Product:** Vani Voicemail  
-**Developer:** Danish K ([https://danishk.web.app](https://danishk.web.app))
+> **LEGAL NOTICE & DRAFT TEMPLATE**: This disclosure document outlines data safety practices for {{APP_NAME}} in accordance with Google Play Developer policies.
+
+**Product:** {{APP_NAME}}  
+**Company:** {{COMPANY_NAME}}  
+**Developer:** {{DEVELOPER_NAME}}  
+**Contact:** {{SUPPORT_EMAIL}}  
+
+---
 
 ## Overview
-Vani Voicemail is engineered to exceed Google Play's strictest privacy and data safety standards. We believe in minimal data footprint and zero unnecessary access.
+{{APP_NAME}} is architected to minimize data collection and maintain complete local user privacy. All core voicemail functions operate entirely on-device.
 
-## Data Collected & Shared Table
+## Data Collection & Sharing Matrix
 
-| Data Type | Collected? | Shared with 3rd Parties? | Storage Location | Retention |
+| Data Type | Collected? | Shared with Third Parties? | Storage Location | Retention Policy |
 | :--- | :--- | :--- | :--- | :--- |
-| **Voice Recordings** | Yes (on user decline/miss) | **NO** | Local Mobile Storage | User-chosen (30-90 days / Forever) |
-| **Audio Transcripts** | Yes (generated on-device) | **NO** | Local SQLite Database | User-chosen (30-90 days / Forever) |
-| **Phone Numbers** | Yes (caller ID) | **NO** | Local SQLite Database | Local only |
-| **Contacts** | Read-only (name matching) | **NO** | Never leaves Android Contacts | N/A |
-| **Location** | **NO** | **NO** | Not accessed | N/A |
-| **Financial Info** | **NO** | **NO** | Not accessed | N/A |
-| **Crash & Diagnostic Logs** | Locally buffered | **NO** (User-consented export only) | In-Memory (Max 500 entries) | Redacted & cleared on user tap |
+| **Voice Recordings** | Yes (on missed/screened call) | **NO** | Sandboxed Local Storage | User configurable (30/60/90 days / Forever) |
+| **Speech Transcripts** | Yes (generated on-device) | **NO** | Sandboxed Local SQLite | User configurable (30/60/90 days / Forever) |
+| **Phone Numbers** | Yes (incoming caller ID) | **NO** | Sandboxed Local SQLite | Local only |
+| **Contacts** | Read-only (display name matching) | **NO** | Never leaves device contacts | Read on demand |
+| **Location Data** | **NO** | **NO** | Not collected | N/A |
+| **Financial / Payment Info** | **NO** | **NO** | Not collected | N/A |
+| **Diagnostics & Error Logs** | Optional (user consent only) | **NO** (User-initiated export only) | Memory / Sandboxed SQLite | Redacted & cleared on demand |
 
-## Security Practices
-- **Data in Transit:** TLS 1.3 encryption is enforced during temporary gateway fetch.
-- **Data in Rest:** Local app-sandboxed storage (`/data/data/com.dalsc.voicemail_assistant/`).
-- **Data Deletion:** 1-tap complete local database wipe available in Settings.
-
+## Security Architecture
+- **Encryption in Transit:** All network requests use TLS 1.3 encryption.
+- **Local Isolation:** SQLite database and audio files reside in private Android application sandboxed directory.
+- **User Deletion Rights:** 1-tap complete local database wipe is accessible in Settings at any time.

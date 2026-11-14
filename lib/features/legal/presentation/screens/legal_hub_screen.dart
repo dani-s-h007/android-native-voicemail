@@ -13,7 +13,7 @@ class LegalHubScreen extends StatelessWidget {
     return AppScaffold(
       appBar: const AppAppBar(
         title: 'Legal & Compliance Hub',
-        subtitle: 'Indian Telecommunications & DPDP Standards',
+        subtitle: 'Regulatory Compliance & Privacy Policies',
       ),
       body: ListView(
         padding: AppSpacing.padding16,

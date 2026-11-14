@@ -1,0 +1,20 @@
+{
+  "@@locale": "en",
+  "appName": "Voicemail Assistant",
+  "@appName": {
+    "description": "The title of the application"
+  },
+  "tabVoicemail": "Voicemail",
+  "tabModes": "Modes",
+  "tabGreetings": "Greetings",
+  "tabSettings": "Settings",
+  "inboxZero": "Inbox Zero",
+  "callBack": "Call Back",
+  "copyText": "Copy Text",
+  "share": "Share",
+  "delete": "Delete",
+  "star": "Star",
+  "active": "Active",
+  "paused": "Paused",
+  "save": "Save"
+}

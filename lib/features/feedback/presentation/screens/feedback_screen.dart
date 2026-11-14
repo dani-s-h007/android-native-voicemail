@@ -23,7 +23,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   final List<String> _categories = [
     'Feature Suggestion',
     'Bug Report',
-    'Carrier Issue (Jio/Airtel/Vi)',
+    'Mobile Carrier Forwarding Issue',
     'Audio & Transcription Feedback',
     'General Appreciation',
   ];
@@ -43,7 +43,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         if (mounted) context.showSnackBar('Thank you for your rating!');
       }
     } catch (_) {
-      if (mounted) context.showSnackBar('Thank you for rating Vani Voicemail!');
+      if (mounted) context.showSnackBar('Thank you for rating ${AppConfig.appName}!');
     }
   }
 
@@ -57,7 +57,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     setState(() => _isSubmitting = true);
 
     final buffer = StringBuffer();
-    buffer.writeln('=== Vani Voicemail User Feedback ===');
+    buffer.writeln('=== ${AppConfig.appName} User Feedback ===');
     buffer.writeln('Category: $_selectedCategory');
     buffer.writeln('App Version: ${AppConfig.version} (Build ${AppConfig.buildNumber})');
     buffer.writeln('Date: ${DateTime.now().toIso8601String()}');
@@ -72,13 +72,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     await Share.share(
       buffer.toString(),
-      subject: 'Vani Voicemail Feedback: $_selectedCategory',
+      subject: '${AppConfig.appName} Feedback: $_selectedCategory',
     );
 
     if (mounted) {
       setState(() => _isSubmitting = false);
       _feedbackController.clear();
-      context.showSnackBar('Thank you! Feedback prepared for Danish K.');
+      context.showSnackBar('Thank you! Feedback prepared for submission.');
     }
   }
 
@@ -87,7 +87,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     return AppScaffold(
       appBar: const AppAppBar(
         title: 'Feedback & Support',
-        subtitle: 'Help improve Vani Voicemail',
+        subtitle: 'Help improve ${AppConfig.appName}',
       ),
       body: ListView(
         padding: AppSpacing.padding16,
@@ -105,14 +105,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Enjoying Vani Voicemail?',
+                        'Enjoying ${AppConfig.appName}?',
                         style: context.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       AppSpacing.vSpace2,
                       Text(
-                        'Leave a 5-star rating to support indie software from Kerala!',
+                        'Leave a 5-star review on Google Play to support development.',
                         style: context.textTheme.bodySmall?.copyWith(
                           color: context.colorScheme.onPrimaryContainer,
                         ),
@@ -140,7 +140,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
           AppSpacing.vSpace8,
           DropdownButtonFormField<String>(
-            value: _selectedCategory,
+            key: ValueKey(_selectedCategory),
+            initialValue: _selectedCategory,
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.category_outlined),
               labelText: 'Select Topic',
@@ -167,27 +168,25 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           TextField(
             controller: _feedbackController,
             maxLines: 5,
+            maxLength: 500,
             decoration: const InputDecoration(
-              hintText: 'Describe your suggestion, carrier experience, or issue in detail...',
+              hintText: 'Describe your idea, report an issue with your carrier, or tell us how the assistant is working for you...',
+              border: OutlineInputBorder(),
             ),
           ),
-          AppSpacing.vSpace16,
+          AppSpacing.vSpace12,
 
-          // Attach Diagnostic Log Option
-          AppCard(
-            variant: AppCardVariant.outlined,
-            child: CheckboxListTile(
-              value: _attachDiagnosticLog,
-              title: const Text('Attach Redacted Diagnostic Log'),
-              subtitle: const Text('Includes system health and USSD status with phone numbers masked'),
-              controlAffinity: ListTileControlAffinity.leading,
-              contentPadding: EdgeInsets.zero,
-              onChanged: (val) => setState(() => _attachDiagnosticLog = val ?? false),
-            ),
+          // Attach Diagnostics Toggle
+          AppSwitchRow(
+            leading: const Icon(Icons.bug_report_outlined),
+            title: 'Attach Redacted Diagnostic Log',
+            subtitle: 'Includes sanitized telephony decision trail (numbers redacted)',
+            value: _attachDiagnosticLog,
+            onChanged: (val) => setState(() => _attachDiagnosticLog = val),
           ),
-          AppSpacing.vSpace20,
+          AppSpacing.vSpace24,
 
-          // Submit Button
+          // Submit Action Button
           FilledButton.icon(
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(50),
@@ -199,7 +198,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
                 : const Icon(Icons.send_rounded),
-            label: Text(_isSubmitting ? 'Preparing...' : 'Send Feedback to Developer'),
+            label: Text(_isSubmitting ? 'Preparing Feedback...' : 'Send Feedback to Developer'),
             onPressed: _isSubmitting ? null : _submitFeedback,
           ),
           AppSpacing.vSpace24,
@@ -208,4 +207,3 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     );
   }
 }
-

@@ -103,6 +103,9 @@ class AppConfig {
   /// TODO_UPDATE: Provide officer contact if enableGrievanceOfficer is true.
   static const String grievanceOfficerContact = 'TODO_UPDATE_OFFICER_CONTACT';
 
+  /// Effective date displayed across legal documents.
+  static const String legalEffectiveDate = 'November 2026';
+
   // ===========================================================================
   // 5. REGIONAL RULES & DEFAULTS
   // ===========================================================================

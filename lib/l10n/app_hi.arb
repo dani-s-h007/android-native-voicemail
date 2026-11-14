@@ -1,0 +1,17 @@
+{
+  "@@locale": "hi",
+  "appName": "वॉयसमेल सहायक",
+  "tabVoicemail": "वॉयसमेल",
+  "tabModes": "मोड्स",
+  "tabGreetings": "अभिवादन",
+  "tabSettings": "सेटिंग्स",
+  "inboxZero": "कोई नया संदेश नहीं",
+  "callBack": "कॉल बैक",
+  "copyText": "कॉपी करें",
+  "share": "शेयर",
+  "delete": "हटाएं",
+  "star": "स्टार",
+  "active": "सक्रिय",
+  "paused": "रोका गया",
+  "save": "सहेजें"
+}

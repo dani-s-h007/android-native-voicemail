@@ -1,0 +1,17 @@
+{
+  "@@locale": "fr",
+  "appName": "Assistant Messagerie Vocale",
+  "tabVoicemail": "Messagerie",
+  "tabModes": "Modes",
+  "tabGreetings": "Annonces",
+  "tabSettings": "Paramètres",
+  "inboxZero": "Boîte de réception vide",
+  "callBack": "Rappeler",
+  "copyText": "Copier le texte",
+  "share": "Partager",
+  "delete": "Supprimer",
+  "star": "Favori",
+  "active": "Actif",
+  "paused": "En pause",
+  "save": "Enregistrer"
+}

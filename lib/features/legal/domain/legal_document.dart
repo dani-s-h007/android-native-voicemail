@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:voicemail/app/config/app_config.dart';
 
 enum LegalDocType {
   privacy(
     id: 'privacy',
     title: 'Privacy Policy',
-    subtitle: 'Zero permanent cloud storage policy & DPDP Act compliance',
+    subtitle: 'Zero permanent cloud storage policy & regional privacy compliance',
     assetPath: 'assets/legal/privacy_policy.md',
-    webUrl: 'https://danishk.web.app/privacy',
+    defaultUrlKey: 'privacy',
     icon: Icons.privacy_tip_outlined,
   ),
   terms(
@@ -14,7 +15,7 @@ enum LegalDocType {
     title: 'Terms of Service',
     subtitle: 'Permitted communication rules and service scope',
     assetPath: 'assets/legal/terms_of_service.md',
-    webUrl: 'https://danishk.web.app/terms',
+    defaultUrlKey: 'terms',
     icon: Icons.description_outlined,
   ),
   dataSafety(
@@ -22,15 +23,15 @@ enum LegalDocType {
     title: 'Google Play Data Safety',
     subtitle: 'Detailed data collection and sharing disclosure table',
     assetPath: 'assets/legal/data_safety.md',
-    webUrl: 'https://danishk.web.app/data-safety',
+    defaultUrlKey: 'data-safety',
     icon: Icons.shield_outlined,
   ),
   recordingNotice(
     id: 'recording-notice',
     title: 'Call Recording & Consent Notice',
-    subtitle: 'Statutory caller notice under Indian Telegraph Act',
+    subtitle: 'Statutory caller notice and recording consent notice',
     assetPath: 'assets/legal/call_recording_notice.md',
-    webUrl: 'https://danishk.web.app/recording-notice',
+    defaultUrlKey: 'recording-notice',
     icon: Icons.record_voice_over_outlined,
   ),
   permissions(
@@ -38,7 +39,7 @@ enum LegalDocType {
     title: 'Permissions Explanation',
     subtitle: 'Comprehensive breakdown of all requested Android permissions',
     assetPath: 'assets/legal/permissions_explanation.md',
-    webUrl: 'https://danishk.web.app/permissions',
+    defaultUrlKey: 'permissions',
     icon: Icons.lock_open_outlined,
   ),
   disclaimer(
@@ -46,15 +47,15 @@ enum LegalDocType {
     title: 'Legal Disclaimer',
     subtitle: 'Carrier network interactions and transcription accuracy',
     assetPath: 'assets/legal/disclaimer.md',
-    webUrl: 'https://danishk.web.app/disclaimer',
+    defaultUrlKey: 'disclaimer',
     icon: Icons.info_outline,
   ),
   grievanceOfficer(
     id: 'grievance',
     title: 'Grievance Officer Contact',
-    subtitle: 'Statutory contact under IT Rules (2021) & DPDP (2023)',
+    subtitle: 'Designated compliance representative and grievance contact',
     assetPath: 'assets/legal/grievance_officer.md',
-    webUrl: 'https://danishk.web.app/grievance',
+    defaultUrlKey: 'grievance',
     icon: Icons.contact_mail_outlined,
   );
 
@@ -62,7 +63,7 @@ enum LegalDocType {
   final String title;
   final String subtitle;
   final String assetPath;
-  final String webUrl;
+  final String defaultUrlKey;
   final IconData icon;
 
   const LegalDocType({
@@ -70,9 +71,28 @@ enum LegalDocType {
     required this.title,
     required this.subtitle,
     required this.assetPath,
-    required this.webUrl,
+    required this.defaultUrlKey,
     required this.icon,
   });
+
+  String get webUrl {
+    switch (this) {
+      case LegalDocType.privacy:
+        return AppConfig.privacyPolicyUrl;
+      case LegalDocType.terms:
+        return AppConfig.termsUrl;
+      case LegalDocType.dataSafety:
+        return AppConfig.dataSafetyUrl;
+      case LegalDocType.recordingNotice:
+        return AppConfig.recordingNoticeUrl;
+      case LegalDocType.permissions:
+        return '${AppConfig.developerWebsiteUrl}/permissions';
+      case LegalDocType.disclaimer:
+        return '${AppConfig.developerWebsiteUrl}/disclaimer';
+      case LegalDocType.grievanceOfficer:
+        return '${AppConfig.developerWebsiteUrl}/grievance';
+    }
+  }
 
   static LegalDocType fromId(String id) {
     return LegalDocType.values.firstWhere(
@@ -81,4 +101,3 @@ enum LegalDocType {
     );
   }
 }
-

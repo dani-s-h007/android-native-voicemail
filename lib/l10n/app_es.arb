@@ -1,0 +1,17 @@
+{
+  "@@locale": "es",
+  "appName": "Asistente de Buzón de Voz",
+  "tabVoicemail": "Buzón de Voz",
+  "tabModes": "Modos",
+  "tabGreetings": "Saludos",
+  "tabSettings": "Ajustes",
+  "inboxZero": "Bandeja Vacía",
+  "callBack": "Devolver llamada",
+  "copyText": "Copiar texto",
+  "share": "Compartir",
+  "delete": "Eliminar",
+  "star": "Destacar",
+  "active": "Activo",
+  "paused": "Pausado",
+  "save": "Guardar"
+}
