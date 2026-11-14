@@ -19,10 +19,11 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
   bool _filterAll = true;
   bool _filterUnread = false;
   bool _filterStarred = false;
+  int _selectedChoiceChip = 0;
+  final List<String> _tags = ['Urgent', 'Work', 'Follow-up'];
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider);
     final isDark = context.isDark;
 
     return AppScaffold(
@@ -44,14 +45,14 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
         padding: AppSpacing.padding16,
         children: [
           // Section 1: Search Bar
-          _buildSectionHeader('1. Pill Search Bar (M3)'),
+          _buildSectionHeader('1. Search Bar (M3 Pill with Clear Button)'),
           const AppSearchBar(
             hintText: 'Search voicemails, transcripts, contacts...',
           ),
           AppSpacing.vSpace16,
 
-          // Section 2: Filter Chips
-          _buildSectionHeader('2. Filter Chips'),
+          // Section 2: Chips
+          _buildSectionHeader('2. Chips (Filter, Action, Choice, Input)'),
           AppFilterBar(
             padding: EdgeInsets.zero,
             chips: [
@@ -84,6 +85,40 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
                   _filterAll = !_filterUnread && !_filterStarred;
                 }),
               ),
+            ],
+          ),
+          AppSpacing.vSpace8,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              AppActionChip(
+                avatar: const Icon(Icons.play_arrow, size: 18),
+                label: 'Play All Unread',
+                onPressed: () => AppSnackbar.showInfo(context, 'Playing unread messages...'),
+              ),
+              AppChoiceChip(
+                label: 'Compact View',
+                selected: _selectedChoiceChip == 0,
+                onSelected: (selected) {
+                  if (selected) setState(() => _selectedChoiceChip = 0);
+                },
+              ),
+              AppChoiceChip(
+                label: 'Detailed View',
+                selected: _selectedChoiceChip == 1,
+                onSelected: (selected) {
+                  if (selected) setState(() => _selectedChoiceChip = 1);
+                },
+              ),
+              for (final tag in _tags)
+                AppInputChip(
+                  label: tag,
+                  onDeleted: () {
+                    setState(() => _tags.remove(tag));
+                    AppSnackbar.showInfo(context, 'Removed tag: $tag');
+                  },
+                ),
             ],
           ),
           AppSpacing.vSpace16,
@@ -119,6 +154,21 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
           ),
           AppSpacing.vSpace8,
           AppCard(
+            variant: AppCardVariant.elevated,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Elevated Card', style: context.textTheme.titleMedium),
+                AppSpacing.vSpace4,
+                Text(
+                  'M3 level 1 elevation for subtle shadow depth.',
+                  style: context.textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.vSpace8,
+          AppCard(
             variant: AppCardVariant.outlined,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,20 +189,20 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
           AppListTile(
             leading: CircleAvatar(
               backgroundColor: context.colorScheme.primaryContainer,
-              child: Text('DK', style: TextStyle(color: context.colorScheme.onPrimaryContainer)),
+              child: Text('AM', style: TextStyle(color: context.colorScheme.onPrimaryContainer)),
             ),
-            title: const Text('Danish K'),
-            subtitle: const Text('Call handled by Server Assistant • 0:42'),
+            title: const Text('Alex Morgan'),
+            subtitle: const Text('Call handled by Automated Assistant • 0:42'),
             trailing: const Text('10:45 AM'),
-            onTap: () => context.showSnackBar('Tapped Danish K voicemail'),
+            onTap: () => AppSnackbar.showInfo(context, 'Tapped Alex Morgan voicemail'),
           ),
           AppListTile(
             leading: CircleAvatar(
               backgroundColor: context.colorScheme.secondaryContainer,
               child: const Icon(Icons.phone_missed, size: 20),
             ),
-            title: const Text('+91 98450 12345'),
-            subtitle: const Text('Auto-declined with WhatsApp prompt'),
+            title: const Text('+1 (555) 019-2834'),
+            subtitle: const Text('Auto-declined with instant message prompt'),
             trailing: const Icon(Icons.star_border),
             onTap: () {},
           ),
@@ -188,15 +238,15 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
           AppStatusBanner(
             type: AppBannerType.warning,
             title: 'Battery Optimization Enabled',
-            message: 'Realme UI may sleep background call screening. Tap Fix to exempt.',
+            message: 'System power manager may sleep background call screening. Tap Fix to exempt.',
             actionLabel: 'Fix',
-            onAction: () => context.showSnackBar('Opening Battery Settings...'),
+            onAction: () => AppSnackbar.showInfo(context, 'Opening Battery Settings...'),
           ),
           AppSpacing.vSpace8,
-          AppStatusBanner(
+          const AppStatusBanner(
             type: AppBannerType.success,
             title: 'Call Forwarding Active',
-            message: 'All declined calls forward to +914954268791 (Kerala DID).',
+            message: 'Calls forward to configured carrier voicemail number.',
           ),
           AppSpacing.vSpace16,
 
@@ -209,65 +259,89 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
                 'Required to identify incoming callers and invoke the assistant without ring latency.',
             isGranted: false,
             actionLabel: 'Grant',
-            onGrant: () => context.showSnackBar('Requesting Call Screening Role...'),
+            onGrant: () => AppSnackbar.showSuccess(context, 'Requesting Call Screening Role...'),
           ),
           AppSpacing.vSpace16,
 
           // Section 9: Dialogs & Bottom Sheet Triggers
-          _buildSectionHeader('9. Interactive Overlays'),
-          Row(
+          _buildSectionHeader('9. Interactive Overlays & Snackbars'),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: FilledButton.tonal(
-                  onPressed: () {
-                    AppDialog.showConfirmation(
-                      context: context,
-                      icon: const Icon(Icons.delete_outline, size: 28),
-                      title: 'Delete Voicemail?',
-                      message: 'This will permanently remove this recording from your phone.',
-                      confirmLabel: 'Delete',
-                      isDestructive: true,
-                    );
-                  },
-                  child: const Text('Show Dialog'),
-                ),
+              FilledButton.tonal(
+                onPressed: () {
+                  AppDialog.showConfirmation(
+                    context: context,
+                    icon: const Icon(Icons.delete_outline, size: 28),
+                    title: 'Delete Voicemail?',
+                    message: 'This will permanently remove this recording from your phone.',
+                    confirmLabel: 'Delete',
+                    isDestructive: true,
+                  );
+                },
+                child: const Text('Show Dialog'),
               ),
-              AppSpacing.hSpace12,
-              Expanded(
-                child: FilledButton.tonal(
-                  onPressed: () {
-                    AppBottomSheet.show(
-                      context: context,
-                      title: 'Voicemail Actions',
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            leading: const Icon(Icons.share),
-                            title: const Text('Share Audio & Transcript'),
-                            onTap: () => Navigator.pop(context),
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.block),
-                            title: const Text('Block Caller'),
-                            onTap: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: const Text('Show Sheet'),
-                ),
+              FilledButton.tonal(
+                onPressed: () {
+                  AppBottomSheet.show<void>(
+                    context: context,
+                    title: 'Voicemail Actions',
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.share),
+                          title: const Text('Share Audio & Transcript'),
+                          onTap: () => Navigator.pop(context),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.block),
+                          title: const Text('Block Caller'),
+                          onTap: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: const Text('Show Sheet'),
+              ),
+              FilledButton.tonal(
+                onPressed: () => AppSnackbar.showSuccess(context, 'Voicemail marked as read'),
+                child: const Text('Success Bar'),
+              ),
+              FilledButton.tonal(
+                onPressed: () => AppSnackbar.showWarning(context, 'Microphone permission missing'),
+                child: const Text('Warning Bar'),
+              ),
+              FilledButton.tonal(
+                onPressed: () => AppSnackbar.showError(context, 'Failed to fetch transcript'),
+                child: const Text('Error Bar'),
               ),
             ],
           ),
           AppSpacing.vSpace16,
 
           // Section 10: Loading Skeleton
-          _buildSectionHeader('10. Loading Skeleton (Shimmer)'),
+          _buildSectionHeader('10. Loading Skeleton (Shimmer Placeholders)'),
+          Row(
+            children: [
+              AppLoadingSkeleton.circle(size: 48),
+              AppSpacing.hSpace16,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppLoadingSkeleton.text(width: 140, height: 16),
+                    AppSpacing.vSpace8,
+                    AppLoadingSkeleton.text(width: 200, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          AppSpacing.vSpace16,
           const AppLoadingSkeleton(width: double.infinity, height: 64),
-          AppSpacing.vSpace8,
-          const AppLoadingSkeleton(width: 220, height: 20),
           AppSpacing.vSpace32,
         ],
       ),
@@ -288,4 +362,3 @@ class _ComponentGalleryScreenState extends ConsumerState<ComponentGalleryScreen>
     );
   }
 }
-

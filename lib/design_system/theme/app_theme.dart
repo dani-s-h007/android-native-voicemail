@@ -109,7 +109,7 @@ abstract class AppTheme {
       ),
       bottomSheetTheme: BottomSheetThemeData(
         elevation: 1,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(AppShapes.radiusExtraLarge),
           ),
@@ -120,7 +120,7 @@ abstract class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surfaceContainerHighest.withValues(alpha: isDark ? 0.3 : 0.5),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderRadius: AppShapes.roundedMedium,
           borderSide: BorderSide.none,
         ),
@@ -140,7 +140,7 @@ abstract class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: AppShapes.roundedSmall),
+        shape: const RoundedRectangleBorder(borderRadius: AppShapes.roundedSmall),
         backgroundColor: scheme.inverseSurface,
         contentTextStyle: AppTypography.textTheme.bodyMedium?.copyWith(
           color: scheme.onInverseSurface,

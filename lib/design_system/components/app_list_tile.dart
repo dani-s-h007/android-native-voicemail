@@ -40,7 +40,7 @@ class AppListTile extends StatelessWidget {
         color: selected
             ? colorScheme.secondaryContainer.withValues(alpha: 0.5)
             : Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: AppShapes.roundedMedium),
+        shape: const RoundedRectangleBorder(borderRadius: AppShapes.roundedMedium),
         child: InkWell(
           onTap: enabled ? onTap : null,
           onLongPress: enabled ? onLongPress : null,

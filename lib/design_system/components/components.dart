@@ -8,7 +8,7 @@ export 'app_permission_card.dart';
 export 'app_scaffold.dart';
 export 'app_search_bar.dart';
 export 'app_segmented_button.dart';
+export 'app_snackbar.dart';
 export 'app_state_views.dart';
 export 'app_status_banner.dart';
 export 'app_switch_row.dart';
-

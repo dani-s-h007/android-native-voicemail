@@ -61,61 +61,65 @@ class _AppSearchBarState extends State<AppSearchBar> {
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
 
-    return Container(
-      height: 52,
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: AppShapes.roundedFull,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Row(
-        children: [
-          widget.leading ??
-              Icon(
-                Icons.search,
-                color: colorScheme.onSurfaceVariant,
-                size: 22,
-              ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              focusNode: widget.focusNode,
-              autofocus: widget.autofocus,
-              onChanged: widget.onChanged,
-              onSubmitted: widget.onSubmitted,
-              style: context.textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                hintStyle: context.textTheme.bodyLarge?.copyWith(
+    return Semantics(
+      container: true,
+      label: 'Search bar',
+      child: Container(
+        height: 52,
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHigh,
+          borderRadius: AppShapes.roundedFull,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: Row(
+          children: [
+            widget.leading ??
+                Icon(
+                  Icons.search,
                   color: colorScheme.onSurfaceVariant,
+                  size: 22,
                 ),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-                filled: false,
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                focusNode: widget.focusNode,
+                autofocus: widget.autofocus,
+                onChanged: widget.onChanged,
+                onSubmitted: widget.onSubmitted,
+                style: context.textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  hintText: widget.hintText,
+                  hintStyle: context.textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
+                  filled: false,
+                ),
               ),
             ),
-          ),
-          if (_hasText) ...[
-            IconButton(
-              icon: const Icon(Icons.clear, size: 20),
-              tooltip: 'Clear search',
-              onPressed: () {
-                _controller.clear();
-                widget.onChanged?.call('');
-                widget.onClear?.call();
-              },
-            ),
+            if (_hasText) ...[
+              IconButton(
+                icon: const Icon(Icons.clear, size: 20),
+                tooltip: 'Clear search',
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                onPressed: () {
+                  _controller.clear();
+                  widget.onChanged?.call('');
+                  widget.onClear?.call();
+                },
+              ),
+            ],
+            if (widget.trailing != null) ...widget.trailing!,
           ],
-          if (widget.trailing != null) ...widget.trailing!,
-        ],
+        ),
       ),
     );
   }
 }
-

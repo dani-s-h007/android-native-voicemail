@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:voicemail/design_system/components/app_snackbar.dart';
 
 extension ContextExtensions on BuildContext {
   ThemeData get theme => Theme.of(this);
@@ -17,24 +18,17 @@ extension ContextExtensions on BuildContext {
   bool get isExpanded => screenWidth >= 840;
 
   void showSnackBar(String message, {Duration duration = const Duration(seconds: 4)}) {
-    ScaffoldMessenger.of(this).hideCurrentSnackBar();
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: duration,
-      ),
+    AppSnackbar.show(
+      this,
+      message: message,
+      type: AppSnackbarType.info,
+      duration: duration,
     );
   }
 
   void showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(this).hideCurrentSnackBar();
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: colorScheme.error,
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    AppSnackbar.showError(this, message);
   }
 }
+
 

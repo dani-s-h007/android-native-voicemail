@@ -9,13 +9,13 @@ abstract class AppShapes {
   static const double radiusExtraLarge = 28.0;
   static const double radiusFull = 999.0;
 
-  static final BorderRadius roundedNone = BorderRadius.circular(radiusNone);
-  static final BorderRadius roundedExtraSmall = BorderRadius.circular(radiusExtraSmall);
-  static final BorderRadius roundedSmall = BorderRadius.circular(radiusSmall);
-  static final BorderRadius roundedMedium = BorderRadius.circular(radiusMedium);
-  static final BorderRadius roundedLarge = BorderRadius.circular(radiusLarge);
-  static final BorderRadius roundedExtraLarge = BorderRadius.circular(radiusExtraLarge);
-  static final BorderRadius roundedFull = BorderRadius.circular(radiusFull);
+  static const BorderRadius roundedNone = BorderRadius.all(Radius.circular(radiusNone));
+  static const BorderRadius roundedExtraSmall = BorderRadius.all(Radius.circular(radiusExtraSmall));
+  static const BorderRadius roundedSmall = BorderRadius.all(Radius.circular(radiusSmall));
+  static const BorderRadius roundedMedium = BorderRadius.all(Radius.circular(radiusMedium));
+  static const BorderRadius roundedLarge = BorderRadius.all(Radius.circular(radiusLarge));
+  static const BorderRadius roundedExtraLarge = BorderRadius.all(Radius.circular(radiusExtraLarge));
+  static const BorderRadius roundedFull = BorderRadius.all(Radius.circular(radiusFull));
 
   static const RoundedRectangleBorder cardShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(radiusLarge)),
@@ -33,4 +33,3 @@ abstract class AppShapes {
     borderRadius: BorderRadius.all(Radius.circular(radiusFull)),
   );
 }
-

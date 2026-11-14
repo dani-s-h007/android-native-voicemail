@@ -15,6 +15,7 @@ class AppCard extends StatelessWidget {
   final Color? color;
   final BorderRadius? borderRadius;
   final BorderSide? borderSide;
+  final String? semanticLabel;
 
   const AppCard({
     super.key,
@@ -26,6 +27,7 @@ class AppCard extends StatelessWidget {
     this.color,
     this.borderRadius,
     this.borderSide,
+    this.semanticLabel,
   });
 
   @override
@@ -52,7 +54,7 @@ class AppCard extends StatelessWidget {
         side = borderSide ?? BorderSide(color: colorScheme.outlineVariant);
     }
 
-    return Card(
+    final cardWidget = Card(
       elevation: elevation,
       color: cardColor,
       shape: RoundedRectangleBorder(
@@ -70,6 +72,15 @@ class AppCard extends StatelessWidget {
         ),
       ),
     );
+
+    if (semanticLabel != null || onTap != null) {
+      return Semantics(
+        button: onTap != null,
+        label: semanticLabel,
+        child: cardWidget,
+      );
+    }
+
+    return cardWidget;
   }
 }
-

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:voicemail/core/extensions/context_extensions.dart';
-import 'package:voicemail/design_system/tokens/shape_tokens.dart';
 
 class AppBottomSheet extends StatelessWidget {
   final String? title;

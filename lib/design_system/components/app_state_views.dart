@@ -145,22 +145,50 @@ class AppErrorState extends StatelessWidget {
   }
 }
 
+/// Shimmer loading placeholder supporting reduced motion and common layouts.
 class AppLoadingSkeleton extends StatefulWidget {
   final double width;
   final double height;
   final BorderRadius? borderRadius;
+  final BoxShape shape;
 
   const AppLoadingSkeleton({
     super.key,
     required this.width,
     required this.height,
     this.borderRadius,
+    this.shape = BoxShape.rectangle,
   });
+
+  factory AppLoadingSkeleton.circle({double size = 48}) {
+    return AppLoadingSkeleton(
+      width: size,
+      height: size,
+      shape: BoxShape.circle,
+    );
+  }
+
+  factory AppLoadingSkeleton.text({double width = 120, double height = 16}) {
+    return AppLoadingSkeleton(
+      width: width,
+      height: height,
+      borderRadius: BorderRadius.circular(4),
+    );
+  }
+
+  factory AppLoadingSkeleton.card({double height = 100}) {
+    return AppLoadingSkeleton(
+      width: double.infinity,
+      height: height,
+      borderRadius: AppShapes.roundedLarge,
+    );
+  }
 
   factory AppLoadingSkeleton.listItem() {
     return const AppLoadingSkeleton(
       width: double.infinity,
       height: 72,
+      borderRadius: AppShapes.roundedMedium,
     );
   }
 
@@ -195,6 +223,21 @@ class _AppLoadingSkeletonState extends State<AppLoadingSkeleton>
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+    if (disableAnimations) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          shape: widget.shape,
+          borderRadius: widget.shape == BoxShape.circle
+              ? null
+              : (widget.borderRadius ?? AppShapes.roundedMedium),
+        ),
+      );
+    }
 
     return AnimatedBuilder(
       animation: _animation,
@@ -206,7 +249,10 @@ class _AppLoadingSkeletonState extends State<AppLoadingSkeleton>
             color: colorScheme.surfaceContainerHighest.withValues(
               alpha: _animation.value,
             ),
-            borderRadius: widget.borderRadius ?? AppShapes.roundedMedium,
+            shape: widget.shape,
+            borderRadius: widget.shape == BoxShape.circle
+                ? null
+                : (widget.borderRadius ?? AppShapes.roundedMedium),
           ),
         );
       },
@@ -214,3 +260,46 @@ class _AppLoadingSkeletonState extends State<AppLoadingSkeleton>
   }
 }
 
+/// Shimmer placeholder list for inbox and settings screens.
+class AppShimmerList extends StatelessWidget {
+  final int itemCount;
+  final EdgeInsetsGeometry padding;
+
+  const AppShimmerList({
+    super.key,
+    this.itemCount = 6,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      padding: padding,
+      itemCount: itemCount,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (_, __) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          children: [
+            AppLoadingSkeleton.circle(size: 44),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppLoadingSkeleton.text(width: 160, height: 16),
+                  const SizedBox(height: 8),
+                  AppLoadingSkeleton.text(width: 220, height: 12),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            AppLoadingSkeleton.text(width: 40, height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+}
