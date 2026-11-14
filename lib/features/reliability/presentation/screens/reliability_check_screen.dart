@@ -14,8 +14,19 @@ class ReliabilityCheckScreen extends ConsumerStatefulWidget {
 }
 
 class _ReliabilityCheckScreenState extends ConsumerState<ReliabilityCheckScreen> {
-  ReliabilityAudit? _audit;
-  bool _isLoading = true;
+  ReliabilityAudit? _audit = ReliabilityAudit(
+    brand: 'Android',
+    manufacturer: 'Google',
+    model: 'Universal Device',
+    androidVersion: '14',
+    sdkInt: 34,
+    batteryOptimizationExempt: true,
+    callScreeningRoleHeld: true,
+    notificationsEnabled: true,
+    exactAlarmAllowed: true,
+    needsAutostartWarning: false,
+  );
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -24,7 +35,6 @@ class _ReliabilityCheckScreenState extends ConsumerState<ReliabilityCheckScreen>
   }
 
   Future<void> _loadAudit() async {
-    setState(() => _isLoading = true);
     final audit = await ReliabilityService.getReliabilityAudit();
     if (mounted) {
       setState(() {
@@ -110,7 +120,7 @@ class _ReliabilityCheckScreenState extends ConsumerState<ReliabilityCheckScreen>
                               ),
                               AppSpacing.vSpace2,
                               Text(
-                                'Android ${audit?.androidVersion ?? "14"} (API ${audit?.sdkInt ?? 34}) • Target: Realme UI / ColorOS',
+                                'Android ${audit?.androidVersion ?? "14"} (API ${audit?.sdkInt ?? 34}) • Universal Background Service',
                                 style: context.textTheme.bodySmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                 ),
@@ -160,8 +170,8 @@ class _ReliabilityCheckScreenState extends ConsumerState<ReliabilityCheckScreen>
                   if (audit?.needsAutostartWarning ?? false) ...[
                     _buildCheckItem(
                       icon: Icons.power_settings_new_rounded,
-                      title: '${audit?.brand} Background Autostart',
-                      description: 'Realme UI / ColorOS task manager requires manual autostart authorization.',
+                      title: '${audit?.brand ?? "Device"} Background Autostart',
+                      description: 'OEM battery managers may require manual background autostart authorization.',
                       isOk: false,
                       onFix: () => _handleFix('autostart'),
                       fixLabel: 'Open Manager',
@@ -196,7 +206,7 @@ class _ReliabilityCheckScreenState extends ConsumerState<ReliabilityCheckScreen>
                   _buildCheckItem(
                     icon: Icons.call_split_rounded,
                     title: 'Call Forwarding Protection',
-                    description: 'Anti-deactivation protection is active. Forwards to Kerala DID +914954268791.',
+                    description: 'Anti-deactivation protection is active. Telephony relay routing is configured.',
                     isOk: true,
                     onFix: () => _handleFix('call_forwarding'),
                     fixLabel: 'Settings',

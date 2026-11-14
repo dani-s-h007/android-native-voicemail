@@ -18,6 +18,7 @@ import 'package:voicemail/features/onboarding/presentation/screens/permission_ra
 import 'package:voicemail/features/onboarding/presentation/screens/setup_wizard_screen.dart';
 import 'package:voicemail/features/onboarding/presentation/screens/splash_screen.dart';
 import 'package:voicemail/features/reliability/presentation/screens/reliability_check_screen.dart';
+import 'package:voicemail/features/settings/presentation/screens/region_carrier_screen.dart';
 import 'package:voicemail/features/settings/presentation/settings_screen.dart';
 import 'package:voicemail/features/voicemail/presentation/screens/voicemail_detail_screen.dart';
 import 'package:voicemail/features/voicemail/presentation/screens/voicemail_inbox_screen.dart';
@@ -82,6 +83,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppConstants.routeDiagnostics,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const CallDiagnosticsScreen(),
+      ),
+
+      // Region & Carrier Settings
+      GoRoute(
+        path: AppConstants.routeRegionCarrier,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const RegionCarrierScreen(),
       ),
 
       // About & Licenses

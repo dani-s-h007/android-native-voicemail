@@ -18,6 +18,7 @@ class VoicemailInboxScreen extends ConsumerStatefulWidget {
 
 class _VoicemailInboxScreenState extends ConsumerState<VoicemailInboxScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool _showReliabilityNotice = true;
 
   @override
   void dispose() {
@@ -93,6 +94,19 @@ class _VoicemailInboxScreenState extends ConsumerState<VoicemailInboxScreen> {
           children: [
             // Search Bar & Filter Chips (hidden during multi-select)
             if (!state.isMultiSelecting) ...[
+              if (_showReliabilityNotice) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: AppStatusBanner(
+                    type: AppBannerType.warning,
+                    title: 'Device Health Notice',
+                    message: 'Review background screening exemptions to ensure calls never drop.',
+                    actionLabel: 'Check Health',
+                    onAction: () => context.push(AppConstants.routeReliability),
+                    onDismiss: () => setState(() => _showReliabilityNotice = false),
+                  ),
+                ),
+              ],
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: AppSearchBar(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/core/extensions/context_extensions.dart';
 import 'package:voicemail/core/logging/app_logger.dart';
 import 'package:voicemail/core/reliability/reliability_service.dart';
@@ -14,8 +15,8 @@ class CallDiagnosticsScreen extends StatefulWidget {
 }
 
 class _CallDiagnosticsScreenState extends State<CallDiagnosticsScreen> {
-  List<Map<String, dynamic>> _logs = [];
-  bool _isLoading = true;
+  List<Map<String, dynamic>> _logs = ReliabilityService.mockDiagnosticLogs;
+  bool _isLoading = false;
   String _filterQuery = '';
 
   @override
@@ -25,7 +26,6 @@ class _CallDiagnosticsScreenState extends State<CallDiagnosticsScreen> {
   }
 
   Future<void> _refreshLogs() async {
-    setState(() => _isLoading = true);
     final logs = await ReliabilityService.getDiagnosticLogs(limit: 50);
 
     if (mounted) {
@@ -47,15 +47,15 @@ class _CallDiagnosticsScreenState extends State<CallDiagnosticsScreen> {
 
     if (confirmed == true) {
       await ReliabilityService.clearDiagnosticLogs();
-      _refreshLogs();
+      await _refreshLogs();
     }
   }
 
   Future<void> _exportLogs() async {
     final buffer = StringBuffer();
-    buffer.writeln('=== Vani Voicemail Call Diagnostics Audit Trail ===');
+    buffer.writeln('=== ${AppConfig.appName} Call Diagnostics Audit Trail ===');
     buffer.writeln('Exported on: ${DateTime.now().toIso8601String()}');
-    buffer.writeln('Device: Android / Realme UI');
+    buffer.writeln('Device: Android System');
     buffer.writeln('--------------------------------------------------\n');
 
     for (final item in _logs) {
@@ -75,7 +75,7 @@ class _CallDiagnosticsScreenState extends State<CallDiagnosticsScreen> {
 
     await Share.share(
       buffer.toString(),
-      subject: 'Vani Voicemail Call Diagnostic Audit',
+      subject: '${AppConfig.appName} Call Diagnostic Audit',
     );
   }
 
@@ -139,7 +139,10 @@ class _CallDiagnosticsScreenState extends State<CallDiagnosticsScreen> {
 
   Widget _buildDecisionCard(Map<String, dynamic> item) {
     final colorScheme = context.colorScheme;
-    final timeStr = item['timestamp']?.toString().substring(0, 19).replaceAll('T', ' ') ?? '';
+    final rawTime = item['timestamp']?.toString() ?? '';
+    final timeStr = rawTime.length >= 19
+        ? rawTime.substring(0, 19).replaceAll('T', ' ')
+        : rawTime;
     final rawNumber = item['caller_number']?.toString() ?? 'Unknown';
     final number = AppLogger.redact(rawNumber);
     final decision = item['decision']?.toString() ?? 'UNKNOWN';

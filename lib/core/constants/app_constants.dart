@@ -12,6 +12,16 @@ abstract class AppConstants {
   static const String keyBlockScreenCapture = 'block_screen_capture';
   static const String keyDndActive = 'dnd_active';
   static const String keyDndUntil = 'dnd_until';
+  static const String keyUserDisplayName = 'user_display_name';
+  static const String keyUserPhoneNumber = 'user_phone_number';
+  static const String keyUserSecondaryNumber = 'user_secondary_number';
+  static const String keySelectedRegion = 'selected_region';
+  static const String keySelectedCarrier = 'selected_carrier';
+  static const String keyCustomCarrier = 'custom_carrier';
+  static const String keyNotificationSound = 'notification_sound';
+  static const String keyVibrateOnVoicemail = 'vibrate_on_voicemail';
+  static const String keyPriorityAlerts = 'priority_alerts';
+  static const String keyBackupLocation = 'backup_location';
 
   // Modes
   static const String modeServerRelay = 'MODE_1_SERVER_RELAY';
@@ -19,8 +29,9 @@ abstract class AppConstants {
   static const String modeAutoAnswer = 'MODE_3_AUTO_ANSWER';
   static const String modeSilentDnd = 'MODE_4_SILENT_DND';
 
-  // Default Carrier Number
-  static const String defaultExotelKeralaDid = '+914954268791';
+  // Default Carrier / Voicemail Relay Number
+  static const String defaultVoicemailRelayNumber = '+15550198765';
+  static const String defaultExotelKeralaDid = '+15550198765';
 
   // Routes
   static const String routeSplash = '/splash';
@@ -36,6 +47,7 @@ abstract class AppConstants {
   static const String routeSettings = '/settings';
   static const String routeReliability = '/reliability';
   static const String routeDiagnostics = '/diagnostics';
+  static const String routeRegionCarrier = '/region-carrier';
   static const String routeAbout = '/about';
   static const String routeFeedback = '/feedback';
   static const String routeLegal = '/legal/:document';
