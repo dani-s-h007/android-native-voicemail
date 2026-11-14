@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:voicemail/app/config/app_config.dart';
 import 'package:voicemail/app/config/flavor_config.dart';
 
@@ -68,7 +68,7 @@ class ConfigValidator {
         throw ConfigValidationException(buffer.toString(), violations);
       } else {
         // In dev or staging, log warning but do not crash
-        stdout.writeln(buffer.toString());
+        debugPrint(buffer.toString());
       }
     }
   }
@@ -84,29 +84,3 @@ class ConfigValidationException implements Exception {
   String toString() => message;
 }
 
-/// Standalone CLI entry-point for CI/CD build pipelines.
-/// Usage: dart run lib/app/config/config_validator.dart [dev|staging|prod]
-void main(List<String> args) {
-  final flavorName = args.isNotEmpty ? args.first.toLowerCase() : 'prod';
-  final flavor = Flavor.values.firstWhere(
-    (f) => f.name == flavorName,
-    orElse: () => Flavor.prod,
-  );
-
-  stdout.writeln('Running build-time config validation for flavor: ${flavor.name}...');
-  final violations = ConfigValidator.findViolations(flavor: flavor);
-
-  if (violations.isNotEmpty) {
-    stderr.writeln('FAIL: Found ${violations.length} unconfigured TODO_UPDATE placeholders:');
-    for (final v in violations) {
-      stderr.writeln('  * $v');
-    }
-    if (flavor == Flavor.prod) {
-      exitCode = 1;
-    } else {
-      stdout.writeln('WARNING: Ignored for non-production flavor ${flavor.name}.');
-    }
-  } else {
-    stdout.writeln('SUCCESS: All configuration placeholders verified for ${flavor.name}.');
-  }
-}

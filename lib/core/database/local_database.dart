@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:voicemail/features/voicemail/domain/voicemail.dart';
@@ -7,9 +8,15 @@ class LocalDatabase {
   static final LocalDatabase instance = LocalDatabase._init();
   static Database? _database;
 
+  // In-memory backing store for web preview / web runtime
+  final List<Voicemail> _webStore = [];
+
   LocalDatabase._init();
 
   Future<Database> get database async {
+    if (kIsWeb) {
+      throw UnsupportedError('SQLite is unsupported on web; using in-memory store.');
+    }
     if (_database != null) return _database!;
     _database = await _initDB('voicemail_app.db');
     return _database!;
@@ -72,6 +79,11 @@ class LocalDatabase {
   }
 
   Future<int> insertVoicemail(Voicemail vm) async {
+    if (kIsWeb) {
+      _webStore.removeWhere((v) => v.id == vm.id);
+      _webStore.add(vm);
+      return 1;
+    }
     final db = await database;
     return await db.insert(
       'voicemails',
@@ -81,6 +93,19 @@ class LocalDatabase {
   }
 
   Future<List<Voicemail>> getAllVoicemails({String? searchQuery}) async {
+    if (kIsWeb) {
+      if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+        final q = searchQuery.trim().toLowerCase();
+        return _webStore.where((v) {
+          final nameMatch = v.callerName?.toLowerCase().contains(q) ?? false;
+          final numMatch = v.callerNumber.toLowerCase().contains(q);
+          final transcriptMatch = v.transcriptText?.toLowerCase().contains(q) ?? false;
+          return nameMatch || numMatch || transcriptMatch;
+        }).toList();
+      }
+      return List.unmodifiable(_webStore);
+    }
+
     final db = await database;
     List<Map<String, dynamic>> maps;
 
@@ -99,6 +124,14 @@ class LocalDatabase {
   }
 
   Future<Voicemail?> getVoicemailById(String id) async {
+    if (kIsWeb) {
+      try {
+        return _webStore.firstWhere((v) => v.id == id);
+      } catch (_) {
+        return null;
+      }
+    }
+
     final db = await database;
     final maps = await db.query(
       'voicemails',
@@ -113,6 +146,14 @@ class LocalDatabase {
   }
 
   Future<void> updateVoicemail(Voicemail vm) async {
+    if (kIsWeb) {
+      final idx = _webStore.indexWhere((v) => v.id == vm.id);
+      if (idx != -1) {
+        _webStore[idx] = vm;
+      }
+      return;
+    }
+
     final db = await database;
     await db.update(
       'voicemails',
@@ -123,6 +164,14 @@ class LocalDatabase {
   }
 
   Future<void> markAsRead(String id, bool isRead) async {
+    if (kIsWeb) {
+      final idx = _webStore.indexWhere((v) => v.id == id);
+      if (idx != -1) {
+        _webStore[idx] = _webStore[idx].copyWith(isRead: isRead);
+      }
+      return;
+    }
+
     final db = await database;
     await db.update(
       'voicemails',
@@ -134,6 +183,15 @@ class LocalDatabase {
 
   Future<void> markMultipleAsRead(Set<String> ids, bool isRead) async {
     if (ids.isEmpty) return;
+    if (kIsWeb) {
+      for (var i = 0; i < _webStore.length; i++) {
+        if (ids.contains(_webStore[i].id)) {
+          _webStore[i] = _webStore[i].copyWith(isRead: isRead);
+        }
+      }
+      return;
+    }
+
     final db = await database;
     final batch = db.batch();
     for (final id in ids) {
@@ -148,6 +206,14 @@ class LocalDatabase {
   }
 
   Future<void> toggleStarred(String id, bool isStarred) async {
+    if (kIsWeb) {
+      final idx = _webStore.indexWhere((v) => v.id == id);
+      if (idx != -1) {
+        _webStore[idx] = _webStore[idx].copyWith(isStarred: isStarred);
+      }
+      return;
+    }
+
     final db = await database;
     await db.update(
       'voicemails',
@@ -158,6 +224,18 @@ class LocalDatabase {
   }
 
   Future<void> updateTranscript(String id, String text, String lang) async {
+    if (kIsWeb) {
+      final idx = _webStore.indexWhere((v) => v.id == id);
+      if (idx != -1) {
+        _webStore[idx] = _webStore[idx].copyWith(
+          transcriptText: text,
+          detectedLanguage: lang,
+          transcriptionStatus: 'completed',
+        );
+      }
+      return;
+    }
+
     final db = await database;
     await db.update(
       'voicemails',
@@ -172,6 +250,11 @@ class LocalDatabase {
   }
 
   Future<void> deleteVoicemail(String id) async {
+    if (kIsWeb) {
+      _webStore.removeWhere((v) => v.id == id);
+      return;
+    }
+
     final db = await database;
     final maps = await db.query('voicemails', columns: ['audio_local_path'], where: 'id = ?', whereArgs: [id]);
     if (maps.isNotEmpty) {
@@ -191,6 +274,11 @@ class LocalDatabase {
   }
 
   Future<void> deleteAllVoicemails() async {
+    if (kIsWeb) {
+      _webStore.clear();
+      return;
+    }
+
     final db = await database;
     final all = await db.query('voicemails', columns: ['audio_local_path']);
     for (var row in all) {
@@ -205,6 +293,13 @@ class LocalDatabase {
 
   Future<int> autoPurgeExpired(int retentionDays) async {
     if (retentionDays <= 0) return 0; // 0 means keep forever
+    if (kIsWeb) {
+      final threshold = DateTime.now().subtract(Duration(days: retentionDays));
+      final before = _webStore.length;
+      _webStore.removeWhere((v) => v.createdAt.isBefore(threshold) && !v.isStarred);
+      return before - _webStore.length;
+    }
+
     final db = await database;
     final threshold = DateTime.now().subtract(Duration(days: retentionDays)).millisecondsSinceEpoch;
 
